@@ -36,7 +36,10 @@ let set_token tk =
 (* Set name of the log file *)
 let set_log_file_name f =
   if(!log_file_name = "") then
-    log_file_name := f
+    begin
+      check_filename f;
+      log_file_name := f;
+    end
   else
     begin
       print_string usage_msg;

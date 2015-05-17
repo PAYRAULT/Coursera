@@ -294,3 +294,14 @@ let check_token s =
   in
   String.iter good_string s
 ;;
+
+let check_filename s =
+  let good_string c =
+    if((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || (c>='0' && c<= '9')
+	  || (c = '.') || (c = '/') || (c = '_') ) then
+      ()
+    else
+      failwith("Illegal filename")
+  in
+  String.iter good_string s
+;;

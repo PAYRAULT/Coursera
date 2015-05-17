@@ -74,7 +74,10 @@ let set_token tk =
 (* Set name of the log file *)
 let set_log_file_name f =
   if(!log_file_name = "") then
-    log_file_name := f
+    begin
+      check_filename f;
+      log_file_name := f;
+    end
   else
     begin
       print_string usage_msg;
@@ -178,17 +181,6 @@ let perform log_file_name token time_stamp guest employee arrival leave room =
       let act = action arrival leave room in
       let next_st = next_state p.state act in
       let new_p = create_p p next_st time_stamp in
-(*
-      if (new_p.state = Unknown) then
-	begin
-	  print_string "Exit the gallery\n";
-	  Hashtbl.remove log.hash p.name;
-	  print_log log.hash;
-	  write_file log_file_name token
-	    {timestamp = time_stamp; hash = log.hash};
-	end
-      else
-*)
       begin
 	Hashtbl.replace log.hash p.name new_p;
 	write_file log_file_name token
