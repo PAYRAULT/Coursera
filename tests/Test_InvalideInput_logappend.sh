@@ -4,10 +4,10 @@ rm -f $HOME/.logdb
 
 # Incorrect Name
 ../build/logappend -T 1 -K secret -A -E 01Fred log1
-../build/logappend -T 1 -K secret -A -E Fred01 log1
-../build/logappend -T 1 -K secret -A -E @Fred log1
-../build/logappend -T 1 -K secret -A -E Fre01d log1
-../build/logappend -T 1 -K secret -A -E Fre@d log1
+../build/logappend -T 2 -K secret -A -E Fred01 log1
+../build/logappend -T 3 -K secret -A -E @Fred log1
+../build/logappend -T 4 -K secret -A -E Fre01d log1
+../build/logappend -T 5 -K secret -A -E Fre@d log1
 
 
 
