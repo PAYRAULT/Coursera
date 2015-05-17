@@ -28,9 +28,19 @@ let print_error e =
   | Bad_encoding  ->  print_string( "Bad_encoding\n")
   | Compression_error(s1, s2) ->  print_string( "Compression_error( "^s1^", "^s2^")\n")
   | No_entropy_source ->  print_string( "No_entropy_source\n")
-  |  Entropy_source_closed ->   print_string( "Entropy_source_closed\n")
+  | Entropy_source_closed ->   print_string( "Entropy_source_closed\n")
   | Compression_not_supported ->  print_string( "Compression_not_supported\n")
 ;;
+
+let print_logdb db =
+  let print_db f e =
+    print_string("filename : "^f^"\n");
+    print_string("filename : "^e.filename^"\n");
+    print_string("iv       : "^e.iv^"\n");
+  in
+  Hashtbl.iter print_db db
+;;
+
 
 (* Load the log db in memeory or create one if file not existing *)
 let load_logfile () =
@@ -83,8 +93,28 @@ let sha3_224 s =
   h
 ;;
 
+let generate_iv logdb log_file_name =
+  try
+    let e = Hashtbl.find logdb log_file_name in
+    let niv = (string_of_int ((int_of_string e.iv) + 1)) in
+    niv
+  with
+  | Not_found -> "0"
+  | e -> raise e
+;;
+
+let find_iv logdb log_file_name =
+  try
+    let e = Hashtbl.find logdb log_file_name in
+    e.iv
+  with
+  | Not_found -> "0"
+  | e -> raise e
+;;
+
+
 (* Udate the log database *)
-let update_logdb logdb logname key =
+let update_logdb logdb logname key iv =
   let hkey = sha3_224 key in
   let hash = hmac logname hkey in
   try
@@ -92,7 +122,7 @@ let update_logdb logdb logname key =
     let nelem = {
       filename = elem.filename;
       mac = hash;
-      iv = elem.iv
+      iv = iv
     } in
     replace logdb logname nelem
   with
@@ -106,51 +136,48 @@ let update_logdb logdb logname key =
   | e -> raise e
 ;;
 
-let check_integrity logname key app =
+let check_integrity logdb logname key app =
   try
-    if( Sys.file_exists log_db_name ) then
-      begin
-	(* Load the log database file *)
-	let in_ch = open_in_bin log_db_name in
-	let logdb = input_value in_ch in
-	close_in in_ch;
-	try
-	  let elem = Hashtbl.find logdb logname in
-	  let hkey = sha3_224 key in
-	  let hash = hmac logname hkey in
-	  if(elem.mac = hash) then
-	    true
-	  else
-	    false
-	with
-	| Not_found ->
-	(* if logappend make the call and the logname doesn't exist,
-	   first time, no integrity check *)
-	  app
-	| e -> raise e
-      end
+    let elem = Hashtbl.find logdb logname in
+    let hkey = sha3_224 key in
+    let hash = hmac logname hkey in
+    if(elem.mac = hash) then
+      true
     else
-      (* if logappend make the call and log database file does not exist, *)
-      (* no integrity check *)
-      app
+      begin
+	false
+      end
   with
+  | Not_found ->
+	  (* if logappend make the call and the logname doesn't exist,
+	     first time, no integrity check *)
+    begin
+      app
+    end
   | e -> raise e
 ;;
 
 
-let encrypt tk fic_in fic_out =
-  let k = sha256 tk in
-  let arcfour = Cipher.arcfour k Cipher.Encrypt in
+let encrypt tk iv fic_in fic_out =
   try
-    Cryptokit.transform_channel arcfour fic_in fic_out;
+    let k = sha256 tk in
+    let kiv = String.sub (sha256 iv) 0 16 in
+    let aes = Cipher.aes k Cipher.Encrypt ?pad:(Some(Padding._8000))
+      ?iv:(Some(kiv)) in
+    Cryptokit.transform_channel aes fic_in fic_out;
   with
   | Cryptokit.Error(e) ->  print_error e;
 ;;
 
-let decrypt tk fic_in fic_out =
-  let k = sha256 tk in
-  let arcfour = Cipher.arcfour k Cipher.Decrypt in
-  transform_channel arcfour fic_in fic_out
+let decrypt tk iv fic_in fic_out =
+  try
+    let k = sha256 tk in
+    let kiv = String.sub (sha256 iv) 0 16 in
+    let aes = Cipher.aes k Cipher.Decrypt ?pad:(Some(Padding._8000))
+      ?iv:(Some(kiv)) in
+    transform_channel aes fic_in fic_out
+  with
+  | Cryptokit.Error(e) ->  print_error e;
 ;;
 
 (* Securely erase the temporay file with random values *)
@@ -173,12 +200,12 @@ let secure_erase name =
 ;;
 
 
-let decrypt_log_file token name =
+let decrypt_log_file token iv name =
   let tname = Filename.temp_file "a-" ".out" in
   let in_ch = open_in name in
   let out_ch = open_out tname in
 
-  decrypt token in_ch out_ch;
+  decrypt token iv in_ch out_ch;
 
   close_in in_ch;
   close_out out_ch;
@@ -192,7 +219,7 @@ let decrypt_log_file token name =
 ;;
 
 
-let encrypt_log_file name token log =
+let encrypt_log_file name token iv log =
   let tname = Filename.temp_file "a-" ".out" in
 
   let out_ch = open_out_bin tname in
@@ -202,7 +229,7 @@ let encrypt_log_file name token log =
   let in_ch = open_in tname in
   let out_ch = open_out name in
 
-  encrypt token in_ch out_ch;
+  encrypt token iv in_ch out_ch;
 
   close_in in_ch;
   close_out out_ch;
@@ -211,10 +238,10 @@ let encrypt_log_file name token log =
 ;;
 
 
-let load_authen_file token name =
-  decrypt_log_file token name
+let load_authen_file token iv name =
+  decrypt_log_file token iv name
 ;;
   
-let write_authen_file name token log =
-  encrypt_log_file name token log
+let write_authen_file name token iv log =
+  encrypt_log_file name token iv log
 ;;

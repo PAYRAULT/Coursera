@@ -163,14 +163,15 @@ let load_batch_file name =
   List.rev cmd_list
 ;;
 
-let perform log_file_name token time_stamp guest employee arrival leave room =
-  if(not(check_integrity log_file_name token true)) then
+let perform logdb log_file_name token time_stamp guest employee arrival leave room =
+  let iv = find_iv logdb log_file_name in
+  if(not(check_integrity logdb log_file_name token true)) then
     begin
       raise Integrity_error
     end
   else
     begin
-      let log = load_file log_file_name token true in
+      let log = load_file log_file_name token iv true in
       check_timestamp log time_stamp;
       let p =
 	if(guest <> "") then
@@ -181,27 +182,26 @@ let perform log_file_name token time_stamp guest employee arrival leave room =
       let act = action arrival leave room in
       let next_st = next_state p.state act in
       let new_p = create_p p next_st time_stamp in
-      begin
-	Hashtbl.replace log.hash p.name new_p;
-	write_file log_file_name token
-	  {timestamp = time_stamp; hash = log.hash};
-      end;
-      (* update logdb *)
-      let logdb = load_logfile() in
-      update_logdb logdb log_file_name token;
-      write_logfile logdb;
+     begin
+       Hashtbl.replace log.hash p.name new_p;
+       write_file log_file_name token iv
+	 {timestamp = time_stamp; hash = log.hash};
+       (* update logdb *)
+       update_logdb logdb log_file_name token iv;
+       write_logfile logdb;
+     end;
     end
 ;;
 
 
-let rec perform_batch cmd =
+let rec perform_batch logdb cmd =
   match cmd with
   | [] -> ()
   | t::q ->
     begin
-      perform t.log_file_name t.token t.time_stamp t.guest t.employee
+      perform logdb t.log_file_name t.token t.time_stamp t.guest t.employee
 	t.arrival t.leave t.room;
-      perform_batch q
+      perform_batch logdb q
     end
 ;;
 
@@ -228,17 +228,18 @@ let main =
 	  ": Specify that the current event is a departure");
 	]
       in Arg.parse speclist (set_log_file_name) usage_msg;
+      let logdb = load_logfile() in 
       if(!batch_file_name = "") then
 	begin
 	  check_arg !log_file_name !token !time_stamp !guest !employee
 	    !arrival !leave !room;
-	  perform !log_file_name !token !time_stamp !guest !employee
+	  perform logdb !log_file_name !token !time_stamp !guest !employee
 	    !arrival !leave !room
 	end
       else
 	begin
 	  let cmd = load_batch_file !batch_file_name in
-	  perform_batch cmd
+	  perform_batch logdb cmd
 	end;
 
       exit 0
@@ -253,6 +254,7 @@ let main =
   | Lexer.LexError(s) ->
     print_string ("Batch lexing error : "^s^"....\n");
     exit 255
-  | _ ->
+  | e ->
+    print_string ("Exc : "^(Printexc.to_string e)^"\n");
     exit 255
 ;;

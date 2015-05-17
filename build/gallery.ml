@@ -247,10 +247,10 @@ let print_result_s log =
 
 (* Load the log file into memory or create a new hashtable if log file not existing for logappend primitive. 
 If file is not existing for logread primitive abort *)
-let load_file name token app =
+let load_file name token iv app =
   try
     if( Sys.file_exists name ) then
-      let log = Crypt_util.load_authen_file token name in
+      let log = Crypt_util.load_authen_file token iv name in
       log
     else if(app) then
       begin
@@ -268,9 +268,9 @@ let load_file name token app =
 ;;
 
 (* Write the log structure into the log  file on disk *)
-let write_file name token log =
+let write_file name token iv log =
   try
-    Crypt_util.write_authen_file name token log
+    Crypt_util.write_authen_file name token iv log
   with
   | e -> raise e
 ;;

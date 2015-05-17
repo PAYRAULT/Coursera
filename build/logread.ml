@@ -140,11 +140,13 @@ let main =
 	]
       in Arg.parse speclist (set_log_file_name_opt false) usage_msg;
       check_arg();
-      if( not(check_integrity !log_file_name !token false)) then
+      let logdb = load_logfile () in
+      if( not(check_integrity logdb !log_file_name !token false)) then
 	raise Integrity_error
       else
 	begin
-	  let log = load_file !log_file_name !token false in
+	  let iv = find_iv logdb !log_file_name in
+	  let log = load_file !log_file_name !token iv false in
 	  if(!set_room) then  
 	    let p =
 	      if(!guest <> "") then
