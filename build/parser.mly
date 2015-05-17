@@ -72,12 +72,12 @@ opts:
 ;
 
 opt:
- | OPT_K IDENT                                  { print_string (" -K "^$2); token := $2 }
- | OPT_T INT                                    { print_string (" -T "^(string_of_int $2));time_stamp := $2}
- | OPT_A                                        { print_string (" -A"); arrival := true }
- | OPT_L                                        { print_string (" -L"); leave := true }
- | OPT_E IDENT                                  { print_string (" -E "^$2);employee := $2 }
- | OPT_G IDENT                                  { print_string (" -G "^$2);guest := $2 }
- | OPT_R INT                                    { print_string (" -R "^(string_of_int $2));room := $2 }
+ | OPT_K IDENT                                  { token := $2 }
+ | OPT_T INT                                    { time_stamp := $2}
+ | OPT_A                                        { arrival := true }
+ | OPT_L                                        { leave := true }
+ | OPT_E IDENT                                  { employee := $2 }
+ | OPT_G IDENT                                  { guest := $2 }
+ | OPT_R INT                                    { room := $2 }
 ;
 

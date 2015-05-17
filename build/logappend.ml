@@ -142,12 +142,10 @@ let check_timestamp log t =
 ;;
 
 let load_batch_file name =
-  print_string "Batch option\n";
   let in_ch = open_in name in
   let current_lexbuf = Lexing.from_channel in_ch in
   let cmd_list = Parser.toplevel Lexer.token current_lexbuf in
   close_in in_ch;
-  print_elem_list cmd_list;
   List.rev cmd_list
 ;;
 

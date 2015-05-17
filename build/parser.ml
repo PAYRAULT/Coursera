@@ -238,47 +238,47 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
 # 75 "parser.mly"
-                                                ( print_string (" -K "^_2); token := _2 )
+                                                ( token := _2 )
 # 243 "parser.ml"
                : 'opt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
 # 76 "parser.mly"
-                                                ( print_string (" -T "^(string_of_int _2));time_stamp := _2)
+                                                ( time_stamp := _2)
 # 250 "parser.ml"
                : 'opt))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 77 "parser.mly"
-                                                ( print_string (" -A"); arrival := true )
+                                                ( arrival := true )
 # 256 "parser.ml"
                : 'opt))
 ; (fun __caml_parser_env ->
     Obj.repr(
 # 78 "parser.mly"
-                                                ( print_string (" -L"); leave := true )
+                                                ( leave := true )
 # 262 "parser.ml"
                : 'opt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
 # 79 "parser.mly"
-                                                ( print_string (" -E "^_2);employee := _2 )
+                                                ( employee := _2 )
 # 269 "parser.ml"
                : 'opt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
 # 80 "parser.mly"
-                                                ( print_string (" -G "^_2);guest := _2 )
+                                                ( guest := _2 )
 # 276 "parser.ml"
                : 'opt))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
 # 81 "parser.mly"
-                                                ( print_string (" -R "^(string_of_int _2));room := _2 )
+                                                ( room := _2 )
 # 283 "parser.ml"
                : 'opt))
 (* Entry toplevel *)

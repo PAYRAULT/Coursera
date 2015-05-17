@@ -10,8 +10,10 @@ type file_authen =
     iv : string;        (* IV for the AES encryption of the file *)
   }
 
+(* the log database file *)
 let log_db_name = (Sys.getenv "HOME")^"/.logdb";;
 
+(* Error message from the cryto library *)
 let print_error e =
   match e with
   | Wrong_key_size -> print_string("Wrong_key_size\n")
