@@ -132,7 +132,11 @@ let check_arg log_file_name token time_stamp guest employee
       failwith("Options -E and -G are exclusive and at least once should be called");
     end
   else 
-    ()
+    begin
+      check_name guest;
+      check_name employee;
+      check_token token;
+    end
 ;;
 
 (* Check if the timestamp is going greater between calls *)

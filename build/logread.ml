@@ -94,7 +94,11 @@ let check_arg() =
 	failwith("Options -R and -S are exclusive");
       end
     else
-      ()
+      begin
+	check_name !guest;
+	check_name !employee;
+	check_token !token;
+      end
   else if(!set_time) then
     if(!set_opt_s) then
       begin
@@ -102,7 +106,11 @@ let check_arg() =
 	failwith("Options -T and -S are exclusive");
       end
     else
-      ()
+    begin
+      check_name !guest;
+      check_name !employee;
+      check_token !token;
+    end      
   else
     ()
 ;;

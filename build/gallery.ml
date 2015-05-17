@@ -274,3 +274,23 @@ let write_file name token log =
   with
   | e -> raise e
 ;;
+
+let check_name s =
+  let good_string c =
+    if((c >= 'a' && c <= 'z') || (c>='A' && c<='Z')) then
+      ()
+    else
+      failwith("Illegal name")
+  in
+  String.iter good_string s
+;;
+
+let check_token s =
+  let good_string c =
+    if((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || (c>='0' && c<= '9')) then
+      ()
+    else
+      failwith("Illegal token")
+  in
+  String.iter good_string s
+;;
