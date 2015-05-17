@@ -193,19 +193,39 @@ let analyse_person _ p =
   match p.gender with
   | Employee ->
     begin
-      list_empl := p.name::!list_empl;
-      match p.history with
-      | [] -> ()
-      | t::q ->
-	list_room := gen_list_room t p.name !list_room
+      match p.state with
+      | Room(_) ->
+	begin
+	  list_empl := p.name::!list_empl;
+	  match p.history with
+	  | [] -> ()
+	  | t::q ->
+	    list_room := gen_list_room t p.name !list_room
+	end
+      | Gallery ->
+	begin
+	  list_empl := p.name::!list_empl;
+	end
+      | _ ->
+	()
     end
   | Guest ->
     begin
-      list_guest := p.name::!list_guest;
-      match p.history with
-      | [] -> ()
-      | t::q ->
-	list_room := gen_list_room t p.name !list_room;
+      match p.state with
+      | Room(_) ->
+	begin
+	  list_guest := p.name::!list_guest;
+	  match p.history with
+	  | [] -> ()
+	  | t::q ->
+	    list_room := gen_list_room t p.name !list_room;
+	end
+      | Gallery ->
+	begin
+	  list_guest := p.name::!list_guest;
+	end
+      | _ ->
+	()
     end
 ;;
 
@@ -238,10 +258,8 @@ let rec print_rooms l =
 
 let print_result_s log =
   Hashtbl.iter analyse_person log;
-  if(!list_empl <> []) then
-    print_names (List.fast_sort sort !list_empl);
-  if(!list_guest <> []) then
-    print_names (List.fast_sort sort !list_guest);
+  print_names (List.fast_sort sort !list_empl);
+  print_names (List.fast_sort sort !list_guest);
   print_rooms (List.fast_sort sort_pair !list_room);
 ;;
 
