@@ -26,7 +26,7 @@ rm -f $HOME/.logdb
 ../build/logappend -T 2 -K secret0 -A -E Fred log5
 ../build/logappend -T 3 -K secret0 -A -G John log5
 
-../build/logappend -T 0 -K secret1 -A -G Jane log6
-../build/logappend -T 2 -K secret1 -A -E Fred log6
-../build/logappend -T 3 -K secret1 -A -G John log6
+../build/logappend -T 0 -K secret -A -G Jane log6
+../build/logappend -T 2 -K secret -A -E Fred log6
+../build/logappend -T 3 -K secret -A -G John log6
 
