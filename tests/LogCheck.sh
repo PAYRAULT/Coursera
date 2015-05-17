@@ -29,3 +29,4 @@ rm -f $HOME/.logdb
 ../build/logappend -T 0 -K secret1 -A -G Jane log6
 ../build/logappend -T 2 -K secret1 -A -E Fred log6
 ../build/logappend -T 3 -K secret1 -A -G John log6
+
