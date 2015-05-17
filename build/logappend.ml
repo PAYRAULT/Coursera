@@ -167,18 +167,22 @@ let perform log_file_name token time_stamp guest employee arrival leave room =
       let act = action arrival leave room in
       let next_st = next_state p.state act in
       let new_p = create_p p next_st time_stamp in
+(*
       if (new_p.state = Unknown) then
 	begin
+	  print_string "Exit the gallery\n";
 	  Hashtbl.remove log.hash p.name;
+	  print_log log.hash;
 	  write_file log_file_name token
 	    {timestamp = time_stamp; hash = log.hash};
 	end
       else
-	begin
-	  Hashtbl.replace log.hash p.name new_p;
-	  write_file log_file_name token
-	    {timestamp = time_stamp; hash = log.hash};
-	end;
+*)
+      begin
+	Hashtbl.replace log.hash p.name new_p;
+	write_file log_file_name token
+	  {timestamp = time_stamp; hash = log.hash};
+      end;
       (* update logdb *)
       let logdb = load_logfile() in
       update_logdb logdb log_file_name token;
