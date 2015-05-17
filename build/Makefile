@@ -50,7 +50,7 @@ $(EXEC2): $(OBJS2)
 
 # Clean up
 clean:
-	rm -f *.cm[io] *.cmx *~ .*~ #*# *.o
+	rm -f *.cm[io] *.cmx *~ .*~  *.o
 	rm -f $(GENERATED2) $(GENERATED)
 	rm -f $(EXEC2) $(EXEC)
 
