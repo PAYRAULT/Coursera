@@ -1,0 +1,21 @@
+crypt_util.cmo :
+crypt_util.cmx :
+gallery.cmo : crypt_util.cmo
+gallery.cmx : crypt_util.cmx
+logread.cmo : gallery.cmo crypt_util.cmo
+logread.cmx : gallery.cmx crypt_util.cmx
+crypt_util.cmo :
+crypt_util.cmx :
+gallery.cmo : crypt_util.cmo
+gallery.cmx : crypt_util.cmx
+parserlist.cmo :
+parserlist.cmx :
+logappend.cmo : parserlist.cmo parser.cmi lexer.cmo gallery.cmo \
+    crypt_util.cmo
+logappend.cmx : parserlist.cmx parser.cmx lexer.cmx gallery.cmx \
+    crypt_util.cmx
+parser.cmo : parserlist.cmo parser.cmi
+parser.cmx : parserlist.cmx parser.cmi
+lexer.cmo : parser.cmi
+lexer.cmx : parser.cmx
+parser.cmi : parserlist.cmo
