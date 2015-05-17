@@ -3,6 +3,7 @@ open Gallery
 open Parserlist
 
 exception Integrity_error ;;
+exception Timestamp_error ;;
 
 let token = ref "";;
 let log_file_name = ref "";;
@@ -17,7 +18,7 @@ let leave = ref false;;
 let ouex a b = (a&&(not b))||((not a)&&b);;
 
 let usage_msg = "usage :\n"^
-  "logappend -T <timestamp> -K <token> (-E <employee-name> | -G <guest-name>) (-A | -L) [-R <room-id>] <log>\n"^
+  "logappend - T<timestamp> -K <token> (-E <employee-name> | -G <guest-name>) (-A | -L) [-R <room-id>] <log>\n"^
   "logappend -B <file>\n"
 ;;
 
@@ -150,7 +151,7 @@ let check_arg log_file_name token time_stamp guest employee
 (* Check if the timestamp is going greater between calls *)
 let check_timestamp log t =
   if(log.timestamp >= t) then
-    failwith("Time stamp Error")
+    raise Timestamp_error
   else
     ()
 ;;
@@ -246,15 +247,18 @@ let main =
     end
   with
   | Failure(s) ->
-    print_string (s^"\n");
+    (* print_string (s^"\n"); *)
+    exit 0
+  | Timestamp_error ->
+    print_string ("invalid\n");
     exit 255
   | Integrity_error ->
     print_string ("invalid\n");
     exit 255
   | Lexer.LexError(s) ->
-    print_string ("Batch lexing error : "^s^"....\n");
+    (* print_string ("Batch lexing error : "^s^"....\n"); *)
     exit 255
   | e ->
-    print_string ("Exc : "^(Printexc.to_string e)^"\n");
-    exit 255
+    (* print_string ("Exc : "^(Printexc.to_string e)^"\n"); *)
+    exit 0
 ;;
