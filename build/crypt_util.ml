@@ -157,7 +157,6 @@ let secure_erase name =
   let fsize = lseek out_desc 0 SEEK_END in
   let _ = lseek out_desc 0 SEEK_SET in
   let nb = (fsize / 10) + 1 in
-  print_string ("fsize : "^(string_of_int fsize)^"  :  "^(string_of_int nb)^"\n");
   for j = 1 to 10 do
     let _ = lseek out_desc 0 SEEK_SET in
     for i = 1 to nb do
@@ -186,7 +185,6 @@ let decrypt_log_file token name =
   let log = input_value in_ch in
   close_in in_ch;
 
-  print_string "Erase secure\n";
   secure_erase tname;
   log
 ;;
@@ -207,26 +205,14 @@ let encrypt_log_file name token log =
   close_in in_ch;
   close_out out_ch;
 
-  print_string "Erase secure\n";
   secure_erase tname
 ;;
 
 
 let load_authen_file token name =
   decrypt_log_file token name
-(*
-  let in_ch = open_in_bin name in
-  let log = input_value in_ch in
-  close_in in_ch;
-  log
-*)
 ;;
   
 let write_authen_file name token log =
   encrypt_log_file name token log
-(*
-  let out_ch = open_out_bin name in
-  output_value out_ch log;
-  close_out out_ch
-*)
 ;;
