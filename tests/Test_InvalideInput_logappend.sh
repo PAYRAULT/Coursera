@@ -29,9 +29,9 @@ rm -f log1
 rm -f $HOME/.logdb
 ../build/logappend -T 0 -K secret -A -G Fred log1
 ../build/logappend -T 1 -K secret -A -G Jane log1
-../build/logappend -T 2 -K secret -A -G Bob log1
+../build/logappend -T 3 -K secret -A -G Bob log1
 echo "Error time stamp expected"
-../build/logappend -T 1 -K secret -A -G Alex log1
+../build/logappend -T 2 -K secret -A -G Alex log1
 
 
 #Incorrect Token
@@ -57,7 +57,25 @@ echo "Invalid expected: Error on option"
 #Incorrect RoomID
 rm -f log1
 rm -f $HOME/.logdb
-../build/logappend -T 0 -K secret1 -A -R -G Fred log1
+echo "invalid roomID"
+../build/logappend -T 0 -K secret1 -A -G Fred log1
+../build/logappend -T 1 -K secret1 -A -R a -G Fred log1
+
+#same name
+rm -f log1
+rm -f $HOME/.logdb
+echo "same name wih different case"
+../build/logappend -T 0 -K secret1 -A -G Fred log1
+../build/logappend -T 1 -K secret1 -A -G fred log1
+
+#Incorrect Name Leave
+rm -f log1
+rm -f $HOME/.logdb
+../build/logappend -T 0 -K secret1 -A -G Fred log1
+../build/logappend -T 1 -K secret1 -A -G fred log1
+echo "leave without arrival"
+../build/logappend -T 2 -K secret1 -L -G fred1 log1
+../build/logappend -T 3 -K secret1 -L -G fred log1
 
 
 
