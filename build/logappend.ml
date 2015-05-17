@@ -60,7 +60,10 @@ let set_room r =
 (* Set the token number *)
 let set_token tk =
   if(!token = "") then
-    token := tk
+    begin
+      check_token tk;
+      token := tk;
+    end
   else
     begin
       print_string usage_msg;
@@ -94,7 +97,10 @@ let set_batch_file_name f =
 (* Set employee name *)
 let set_employee emp =
   if(!employee = "") then
-    employee := emp
+    begin
+      check_name emp;
+      employee := emp;
+    end
   else
     begin
       print_string usage_msg;
@@ -105,7 +111,10 @@ let set_employee emp =
 (* Set guest name *)
 let set_guest gu =
   if(!guest = "") then
-    guest := gu
+    begin
+      check_name gu;
+      guest := gu;
+    end
   else
     begin
       print_string usage_msg;
@@ -132,11 +141,7 @@ let check_arg log_file_name token time_stamp guest employee
       failwith("Options -E and -G are exclusive and at least once should be called");
     end
   else 
-    begin
-      check_name guest;
-      check_name employee;
-      check_token token;
-    end
+    ()
 ;;
 
 (* Check if the timestamp is going greater between calls *)

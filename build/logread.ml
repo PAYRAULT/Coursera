@@ -22,7 +22,10 @@ let usage_msg = "usage :\n"^
 (* Set the token number *)
 let set_token tk =
   if(!token = "") then
-    token := tk
+    begin
+      check_token tk;
+      token := tk;
+    end
   else
     begin
       print_string usage_msg;
@@ -50,7 +53,10 @@ let set_log_file_name_opt s f =
 (* Set employee name *)
 let set_employee emp =
   if(!employee = "") then
-    employee := emp
+    begin
+      check_name emp;
+      employee := emp;
+    end
   else
     begin
       print_string usage_msg;
@@ -61,7 +67,10 @@ let set_employee emp =
 (* Set guest name *)
 let set_guest gu =
   if(!guest = "") then
-    guest := gu
+    begin
+      check_name gu;
+      guest := gu;
+    end
   else
     begin
       print_string usage_msg;
@@ -94,11 +103,7 @@ let check_arg() =
 	failwith("Options -R and -S are exclusive");
       end
     else
-      begin
-	check_name !guest;
-	check_name !employee;
-	check_token !token;
-      end
+      ()
   else if(!set_time) then
     if(!set_opt_s) then
       begin
@@ -106,11 +111,7 @@ let check_arg() =
 	failwith("Options -T and -S are exclusive");
       end
     else
-    begin
-      check_name !guest;
-      check_name !employee;
-      check_token !token;
-    end      
+      ()
   else
     ()
 ;;
