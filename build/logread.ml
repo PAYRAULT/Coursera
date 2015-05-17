@@ -1,6 +1,8 @@
 open Crypt_util
 open Gallery
 
+exception Integrity_error ;;
+
 let set_room = ref false;;
 let set_time = ref false;;
 let set_opt_s = ref false;;
@@ -127,7 +129,7 @@ let main =
       in Arg.parse speclist (set_log_file_name_opt false) usage_msg;
       check_arg();
       if( not(check_integrity !log_file_name !token false)) then
-	failwith("Integrity Error")
+	raise Integrity_error
       else
 	begin
 	  let log = load_file !log_file_name !token false in
@@ -156,6 +158,10 @@ let main =
   | Failure(s) ->
     print_string (s^"\n");
     exit 255
-  | _ -> exit 255
+  | Integrity_error ->
+    print_string ("invalid\n");
+    exit 255
+  | _ ->
+    exit 255
 ;;
 

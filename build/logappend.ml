@@ -2,6 +2,8 @@ open Crypt_util
 open Gallery
 open Parserlist
 
+exception Integrity_error ;;
+
 let token = ref "";;
 let log_file_name = ref "";;
 let batch_file_name = ref "";;
@@ -152,7 +154,7 @@ let load_batch_file name =
 let perform log_file_name token time_stamp guest employee arrival leave room =
   if(not(check_integrity log_file_name token true)) then
     begin
-      failwith("Integrity error")
+      raise Integrity_error
     end
   else
     begin
@@ -243,6 +245,9 @@ let main =
   with
   | Failure(s) ->
     print_string (s^"\n");
+    exit 255
+  | Integrity_error ->
+    print_string ("invalid\n");
     exit 255
   | Lexer.LexError(s) ->
     print_string ("Batch lexing error : "^s^"....\n");
