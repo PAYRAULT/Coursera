@@ -1,7 +1,8 @@
 # Ou aller chercher le compilo... Avec un / a la fin
 BINDIR=
-CAMLC=$(BINDIR)ocamlc
-CAMLDEP=$(BINDIR)ocamldep
+CAMLC=$(BINDIR)ocamlopt
+CAML=$(BINDIR)ocamlopt
+CAMLDEP=$(BINDIR)ocamldep.opt
 CAMLLEX=$(BINDIR)ocamllex
 CAMLYACC=$(BINDIR)ocamlyacc
 CAMLFIND=$(BINDIR)ocamlfind
@@ -10,30 +11,33 @@ CAMLFIND=$(BINDIR)ocamlfind
 EXEC = logappend
 SOURCES = crypt_util.ml gallery.ml parserlist.ml logappend.ml
 GENERATED = parser.ml lexer.ml
-OBJS =  parserlist.cmo crypt_util.cmo gallery.cmo \
-parser.cmo lexer.cmo \
-logappend.cmo
+OBJS =  parserlist.cmx crypt_util.cmx gallery.cmx \
+parser.cmx lexer.cmx \
+logappend.cmx
 
 EXEC2 = logread
 SOURCES2 = crypt_util.ml gallery.ml logread.ml 
 GENERATED2 = 
-OBJS2 = crypt_util.cmo gallery.cmo logread.cmo
+OBJS2 = crypt_util.cmx gallery.cmx logread.cmx
 
 # Building the world
 all: depend $(EXEC2) $(EXEC)
 
 $(EXEC): $(OBJS)
-	$(CAMLC) -custom -I +cryptokit unix.cma nums.cma cryptokit.cma $(OBJS) -o $(EXEC) 
+	$(CAMLC) -I +cryptokit  unix.cmxa nums.cmxa cryptokit.cmxa $(OBJS) -o $(EXEC) 
 
 $(EXEC2): $(OBJS2)
-	$(CAMLC) -custom -I +cryptokit unix.cma nums.cma cryptokit.cma $(OBJS2) -o $(EXEC2) 
+	$(CAMLC) -I +cryptokit unix.cmxa nums.cmxa cryptokit.cmxa $(OBJS2) -o $(EXEC2) 
 
 .SUFFIXES:
-.SUFFIXES: .ml .mli .cmo .cmi .cmx
+.SUFFIXES: .ml .mli .cmo .cmi .cmx .cmx
 .SUFFIXES: .mll .mly
 
 .ml.cmo:
-	$(CAMLFIND) $(CAMLC) -linkpkg -thread -package cryptokit -c $<
+	$(CAMLFIND) $(CAML) -linkpkg -thread -package cryptokit -c $<
+
+.ml.cmx:
+	$(CAMLFIND) $(CAML) -linkpkg -thread -package cryptokit -c $<
 
 .mli.cmi:
 	$(CAMLC) -c $<
