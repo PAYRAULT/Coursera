@@ -11,7 +11,7 @@ type file_authen =
   }
 
 (* the log database file *)
-let log_db_name = (Sys.getenv "HOME")^"/.logdb";;
+let log_db_name = ".logdb";;
 
 (* Error message from the cryto library *)
 let print_error e =
