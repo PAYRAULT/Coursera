@@ -9,16 +9,16 @@ CAMLFIND=$(BINDIR)ocamlfind
 
 # User definitions must be here
 EXEC = logappend
-SOURCES = crypt_util.ml gallery.ml parserlist.ml logappend.ml
+SOURCES = rand.ml crypt_util.ml gallery.ml parserlist.ml logappend.ml
 GENERATED = parser.ml lexer.ml
-OBJS =  parserlist.cmx crypt_util.cmx gallery.cmx \
+OBJS =  rand.cmx parserlist.cmx crypt_util.cmx gallery.cmx \
 parser.cmx lexer.cmx \
 logappend.cmx
 
 EXEC2 = logread
-SOURCES2 = crypt_util.ml gallery.ml logread.ml 
+SOURCES2 = rand.ml crypt_util.ml gallery.ml logread.ml 
 GENERATED2 = 
-OBJS2 = crypt_util.cmx gallery.cmx logread.cmx
+OBJS2 = rand.cmx crypt_util.cmx gallery.cmx logread.cmx
 
 # Building the world
 all: depend $(EXEC2) $(EXEC)

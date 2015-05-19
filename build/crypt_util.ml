@@ -1,13 +1,13 @@
 open Hashtbl
 open Cryptokit
 open Unix
-
+open Rand
 
 type file_authen =
   {
     filename : string;  (* filename of the log file *)
     mac : string;       (* Mac of the log file *)
-    iv : string;        (* IV for the AES encryption of the file *)
+    iv : int;        (* IV for the AES encryption of the file *)
   }
 
 (* the log database file *)
@@ -36,7 +36,7 @@ let print_logdb db =
   let print_db f e =
     print_string("filename : "^f^"\n");
     print_string("filename : "^e.filename^"\n");
-    print_string("iv       : "^e.iv^"\n");
+    print_string("iv       : "^(string_of_int e.iv)^"\n");
   in
   Hashtbl.iter print_db db
 ;;
@@ -48,6 +48,7 @@ let load_logfile app =
     begin
       (* Load the log database file *)
       let in_ch = open_in_bin log_db_name in
+      print_string("input log_db\n");
       let log_db = input_value in_ch in
       close_in in_ch;
       log_db
@@ -94,10 +95,12 @@ let sha3_224 s =
 let generate_iv logdb log_file_name iv =
   try
     let e = Hashtbl.find logdb log_file_name in
-    let niv = (string_of_int ((int_of_string e.iv) + 1)) in
+    let niv = e.iv + 1 in
+    print_string("generate_iv : "^(string_of_int niv)^"\n");
     niv
   with
   | Not_found ->
+    print_string("generate_iv exp : "^(string_of_int iv)^"\n");
     iv
   | e ->
     raise e
@@ -109,7 +112,7 @@ let find_iv logdb log_file_name =
     e.iv
   with
   | Not_found ->
-    "0"
+    rand()
   | e ->
     raise e
 ;;
@@ -132,7 +135,7 @@ let update_logdb logdb logname key iv =
     let nelem = {
       filename = logname;
       mac = hash;
-      iv = "0";
+      iv = iv;
     } in
     add logdb logname nelem    
   | e -> raise e
@@ -163,7 +166,7 @@ let check_integrity logdb logname key app =
 let encrypt tk iv fic_in fic_out =
   try
     let k = sha256 tk in
-    let kiv = String.sub (sha256 iv) 0 16 in
+    let kiv = String.sub (sha256 (string_of_int iv)) 0 16 in 
     let aes = Cipher.aes k Cipher.Encrypt ?pad:(Some(Padding._8000))
       ?iv:(Some(kiv)) in
     Cryptokit.transform_channel aes fic_in fic_out;
@@ -174,7 +177,7 @@ let encrypt tk iv fic_in fic_out =
 let decrypt tk iv fic_in fic_out =
   try
     let k = sha256 tk in
-    let kiv = String.sub (sha256 iv) 0 16 in
+    let kiv = String.sub (sha256 (string_of_int iv)) 0 16 in
     let aes = Cipher.aes k Cipher.Decrypt ?pad:(Some(Padding._8000))
       ?iv:(Some(kiv)) in
     transform_channel aes fic_in fic_out
@@ -213,6 +216,7 @@ let decrypt_log_file token iv name =
   close_out out_ch;
   
   let in_ch = open_in_bin tname in
+  print_string("input log\n");
   let log = input_value in_ch in
   close_in in_ch;
 
