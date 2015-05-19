@@ -84,7 +84,7 @@ let set_guest gu =
 (* For unimplemented features *)
 let unimplemented() =
   print_endline ("unimplemented");
-  exit 255
+  exit 0
 ;;
 
 (* Check the consistency of the arguments *)
@@ -140,7 +140,7 @@ let main =
 	]
       in Arg.parse speclist (set_log_file_name_opt false) usage_msg;
       check_arg();
-      let logdb = load_logfile () in
+      let logdb = load_logfile false in
       if( not(check_integrity logdb !log_file_name !token false)) then
 	raise Integrity_error
       else
@@ -162,7 +162,7 @@ let main =
 	      else
 		find_log log.hash !employee Employee false
 	    in
-	    print_string ((string_of_int (log.timestamp - p.enter_time))^"\n")
+	    print_string ((string_of_int (p.leave_time - p.enter_time))^"\n")
 	  else
 	    print_result_s log.hash;
 	    exit 0;
@@ -170,7 +170,7 @@ let main =
     end
   with
   | Failure(s) ->
-    (* print_string (s^"\n"); *)
+    print_string (s^"\n"); 
     exit 0
   | Integrity_error ->
     print_string ("invalid\n");

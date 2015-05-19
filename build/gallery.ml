@@ -27,6 +27,7 @@ type person =
     state : state_t;
     history : int list;
     enter_time : int;
+    leave_time : int;
   }
 
 let list_empl = ref [];;
@@ -54,6 +55,7 @@ let find_log log n g app =
        state = Unknown;
        history = [];
        enter_time = -1;
+       leave_time = -1;
       }
     else
       failwith("Unknown person.");
@@ -69,6 +71,11 @@ let create_p p next_st t =
 	t
       else
 	p.enter_time;
+    leave_time =
+      if(p.state = Gallery && next_st = Unknown) then
+	t
+      else
+	p.leave_time;
     history =
       match next_st with
       | Room(i) -> i::p.history
@@ -258,8 +265,10 @@ let rec print_rooms l =
 
 let print_result_s log =
   Hashtbl.iter analyse_person log;
-  print_names (List.fast_sort sort !list_empl);
-  print_names (List.fast_sort sort !list_guest);
+  if(!list_empl <> []) then
+    print_names (List.fast_sort sort !list_empl);
+  if(!list_guest <> []) then
+    print_names (List.fast_sort sort !list_guest);
   print_rooms (List.fast_sort sort_pair !list_room);
 ;;
 

@@ -185,10 +185,11 @@ let perform logdb log_file_name token time_stamp guest employee arrival leave ro
       let new_p = create_p p next_st time_stamp in
      begin
        Hashtbl.replace log.hash p.name new_p;
-       write_file log_file_name token iv
+       let niv = generate_iv logdb log_file_name iv in
+       write_file log_file_name token niv
 	 {timestamp = time_stamp; hash = log.hash};
        (* update logdb *)
-       update_logdb logdb log_file_name token iv;
+       update_logdb logdb log_file_name token niv;
        write_logfile logdb;
      end;
     end
@@ -229,7 +230,7 @@ let main =
 	  ": Specify that the current event is a departure");
 	]
       in Arg.parse speclist (set_log_file_name) usage_msg;
-      let logdb = load_logfile() in 
+      let logdb = load_logfile true in 
       if(!batch_file_name = "") then
 	begin
 	  check_arg !log_file_name !token !time_stamp !guest !employee
@@ -247,7 +248,7 @@ let main =
     end
   with
   | Failure(s) ->
-    (* print_string (s^"\n"); *)
+    print_string (s^"\n");
     exit 0
   | Timestamp_error ->
     print_string ("invalid\n");

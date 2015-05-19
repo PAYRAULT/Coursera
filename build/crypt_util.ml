@@ -42,24 +42,22 @@ let print_logdb db =
 ;;
 
 
-(* Load the log db in memeory or create one if file not existing *)
-let load_logfile () =
-  try
-    if( Sys.file_exists log_db_name ) then
-      begin
+(* Load the log db in memory or create one if file not existing *)
+let load_logfile app =
+  if( Sys.file_exists log_db_name ) then
+    begin
       (* Load the log database file *)
-	let in_ch = open_in_bin log_db_name in
-	let log_db = input_value in_ch in
-	close_in in_ch;
-	log_db
-      end
+      let in_ch = open_in_bin log_db_name in
+      let log_db = input_value in_ch in
+      close_in in_ch;
+      log_db
+    end
+  else
+    if( app ) then
+      (* Log database file does not exist, create a new log db *)
+      Hashtbl.create 97
     else
-      begin
-	(* Log database file does not exist, create a new log db *)
-	Hashtbl.create 97
-      end
-  with
-  | e -> raise e
+      failwith("log database inexisting.")
 ;;
 
 (* Write the log database on disk *)
@@ -93,14 +91,16 @@ let sha3_224 s =
   h
 ;;
 
-let generate_iv logdb log_file_name =
+let generate_iv logdb log_file_name iv =
   try
     let e = Hashtbl.find logdb log_file_name in
     let niv = (string_of_int ((int_of_string e.iv) + 1)) in
     niv
   with
-  | Not_found -> "0"
-  | e -> raise e
+  | Not_found ->
+    iv
+  | e ->
+    raise e
 ;;
 
 let find_iv logdb log_file_name =
@@ -108,8 +108,10 @@ let find_iv logdb log_file_name =
     let e = Hashtbl.find logdb log_file_name in
     e.iv
   with
-  | Not_found -> "0"
-  | e -> raise e
+  | Not_found ->
+    "0"
+  | e ->
+    raise e
 ;;
 
 
