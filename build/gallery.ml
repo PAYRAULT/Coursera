@@ -263,6 +263,18 @@ let rec print_rooms l =
     print_names (List.fast_sort sort lp); print_rooms q
 ;;
 
+let rec print_rooms_i l =
+  match l with
+  | [] -> ()
+  | t::[] -> print_string((string_of_int t)^"\n")    
+  | t1::t2::q ->
+    if(t1 <> t2) then
+      begin
+	print_string ((string_of_int t1)^",");
+      end;
+    print_rooms_i (t2::q)
+;;
+
 let print_result_s log =
   Hashtbl.iter analyse_person log;
   if(!list_empl <> []) then
@@ -332,3 +344,6 @@ let check_filename s =
   in
   String.iter good_string s
 ;;
+
+
+
