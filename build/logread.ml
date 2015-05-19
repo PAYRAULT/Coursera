@@ -137,13 +137,17 @@ let print_room_history log l =
     match l with
     | [] -> []
     | t::q ->
-      let pp =
-	if(t.gender = Guest) then
-	  find_log log t.name Guest false
-	else
-	  find_log log t.name Employee false
+      let ph =
+	try
+	  if(t.gender = Guest) then
+	    let ppp = find_log log t.name Guest false in ppp.history
+	  else
+	    let ppp = find_log log t.name Employee false in ppp.history
+	with
+	| Not_found ->
+	  []
       in
-      List.append pp.history (lr q)
+      List.append ph (lr q)
   in
   let sort a b =
     if(a<b) then
@@ -192,7 +196,7 @@ let main =
 	      else
 		find_log log.hash !employee Employee false
 	    in
-	    print_hist (List.rev p.history)
+	    print_hist (List.rev p.history);
 	  else if(!set_time) then
 	    let p =
 	      if(!guest <> "") then
