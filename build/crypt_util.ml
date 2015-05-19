@@ -48,7 +48,6 @@ let load_logfile app =
     begin
       (* Load the log database file *)
       let in_ch = open_in_bin log_db_name in
-      print_string("input log_db\n");
       let log_db = input_value in_ch in
       close_in in_ch;
       log_db
@@ -96,11 +95,9 @@ let generate_iv logdb log_file_name iv =
   try
     let e = Hashtbl.find logdb log_file_name in
     let niv = e.iv + 1 in
-    print_string("generate_iv : "^(string_of_int niv)^"\n");
     niv
   with
   | Not_found ->
-    print_string("generate_iv exp : "^(string_of_int iv)^"\n");
     iv
   | e ->
     raise e
@@ -216,7 +213,6 @@ let decrypt_log_file token iv name =
   close_out out_ch;
   
   let in_ch = open_in_bin tname in
-  print_string("input log\n");
   let log = input_value in_ch in
   close_in in_ch;
 
