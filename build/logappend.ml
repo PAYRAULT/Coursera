@@ -229,7 +229,7 @@ let main =
 	 ("-L", Arg.Set(leave),
 	  ": Specify that the current event is a departure");
 	]
-      in Arg.parse speclist (set_log_file_name) usage_msg;
+      in Arg.parse_argv ?current:(Some(ref 0)) Sys.argv speclist (set_log_file_name) usage_msg;
       let logdb = load_logfile true in 
       if(!batch_file_name = "") then
 	begin
@@ -258,6 +258,11 @@ let main =
     exit 255
   | Lexer.LexError(s) ->
     (* print_string ("Batch lexing error : "^s^"....\n"); *)
+    exit 255
+  | Invalid_argument(_) ->
+    exit 255
+  | Arg.Bad(e) ->
+    print_string "invalid\n";
     exit 255
   | e ->
     (* print_string ("Exc : "^(Printexc.to_string e)^"\n"); *)

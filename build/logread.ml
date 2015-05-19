@@ -138,7 +138,7 @@ let main =
 	 ("-I", Arg.Unit(unimplemented),
 	  ": Prints the rooms, as a comma-separated list of room IDs");
 	]
-      in Arg.parse speclist (set_log_file_name_opt false) usage_msg;
+      in Arg.parse_argv ?current:(Some(ref 0)) Sys.argv speclist (set_log_file_name) usage_msg;
       check_arg();
       let logdb = load_logfile false in
       if( not(check_integrity logdb !log_file_name !token false)) then
@@ -173,6 +173,9 @@ let main =
     print_string (s^"\n"); 
     exit 0
   | Integrity_error ->
+    print_string ("invalid\n");
+    exit 255
+  | Arg.Bad(_) ->
     print_string ("invalid\n");
     exit 255
   | _ ->
