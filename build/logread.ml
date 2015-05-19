@@ -170,7 +170,7 @@ let main =
     end
   with
   | Failure(s) ->
-    print_string (s^"\n"); 
+    (* print_string (s^"\n"); *)
     exit 0
   | Integrity_error ->
     print_string ("invalid\n");
