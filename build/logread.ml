@@ -147,17 +147,56 @@ let print_room_history log l =
 	| Not_found ->
 	  []
       in
-      List.append ph (lr q)
+      ph::(lr q)
   in
-  let sort a b =
-    if(a<b) then
-      -1
-    else if (a>b) then
-      1
-    else
-      0
-  in  
-  List.sort sort (lr l)
+  let rec same_room_same_time (r1,ta1,tl1) (r2,ta2,tl2) =
+    print_string((string_of_int r1)^" : "^(string_of_int ta1)^" : "^(string_of_int tl1)^"\n");
+    print_string((string_of_int r2)^" : "^(string_of_int ta2)^" : "^(string_of_int tl2)^"\n");
+    (r1 = r2) &&
+      (((ta1 > ta2) && (tl1 < tl2)) ||
+       ((ta1 < ta2) && (tl1 < tl2) && (ta2 < tl1)) ||
+       ((ta1 < ta2) && (tl1 > tl2)) ||
+       ((ta1 > ta2) && (tl1 > tl2) && (tl2 > ta1)))
+  in
+  let rec parcours e1 l =
+    match l with
+    | [] -> false
+    | e2::q ->
+      begin
+	if (same_room_same_time e1 e2) then
+	  true
+	else
+	  parcours e1 q
+      end
+  in
+  let rec parcours2 ((r,ta,tl) as e) l =
+    match l with
+    | [] -> r
+    | t::q ->
+      begin
+	if(parcours e t) then
+	  (parcours2 e q)
+	else
+	  -1
+      end
+  in
+  let rec parcours3 e q =
+    match e with
+    | [] -> []
+    | t1::q1 ->
+      begin
+	let res = (parcours2 t1 q) in
+	if( res = -1) then
+	  parcours3 q1 q
+	else
+	  res::( parcours3 q1 q)
+      end
+  in
+  let llr = lr l in
+  print_string("parcours4\n");
+  match llr with
+  | fe::q -> (parcours3 fe q)
+  | _ -> failwith("Error")
 ;;
 
 
@@ -204,7 +243,10 @@ let main =
 	      else
 		find_log log.hash !employee Employee false
 	    in
-	    print_string ((string_of_int (p.leave_time - p.enter_time))^"\n")
+	    if(p.leave_time <> -1) then
+	      print_string ((string_of_int (p.leave_time - p.enter_time))^"\n")
+	    else
+	      print_string((string_of_int 0)^"\n")
 	  else if(!set_opt_i) then
 	    begin
 	      let lr = print_room_history log.hash !opt_i_list
@@ -218,7 +260,7 @@ let main =
     end
   with
   | Failure(s) ->
-    (* print_string (s^"\n"); *)
+    (*print_string (s^"\n");*) 
     exit 0
   | Integrity_error ->
     print_string ("invalid\n");
@@ -226,7 +268,8 @@ let main =
   | Arg.Bad(_) ->
     print_string ("invalid\n");
     exit 255
-  | _ ->
+  | e ->
+    (*print_string ("Exc : "^(Printexc.to_string e)^"\n");*)
     exit 255
 ;;
 

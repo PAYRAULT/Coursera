@@ -31,7 +31,7 @@ type person =
   {
     p : person_idx;
     state : state_t;
-    history : int list;
+    history : (int*int*int) list;
     enter_time : int;
     leave_time : int;
   }
@@ -88,7 +88,19 @@ let create_p p1 next_st t =
 	p1.leave_time;
     history =
       match next_st with
-      | Room(i) -> i::p1.history
+      | Room(i) -> (i,t,-1)::p1.history
+      | Gallery ->
+	begin
+	  if(p1.state <> Unknown) then
+	    begin
+	      match p1.history with
+	      | (i,ta,_)::q ->
+		(i,ta,t)::q
+	      | _ -> failwith("Erreur de sequence history")
+	    end
+	  else
+	    p1.history;
+	end
       | _ -> p1.history;
   }
 ;;
@@ -175,8 +187,8 @@ let print_action act =
 let rec print_hist l =
   match l with
   | [] -> ()
-  | t::[] -> print_string ((string_of_int t)^"\n")
-  | t::q -> print_string ((string_of_int t)^","); print_hist q
+  | (i, _, _)::[] -> print_string ((string_of_int i)^"\n")
+  | (i,_,_)::q -> print_string ((string_of_int i)^","); print_hist q
 ;;
 
 let print_person (idx:person_idx) (pers:person) =
@@ -216,8 +228,8 @@ let analyse_person _ p1 =
 	  list_empl := p1.p.name::!list_empl;
 	  match p1.history with
 	  | [] -> ()
-	  | t::q ->
-	    list_room := gen_list_room t p1.p.name !list_room
+	  | (i,_,_)::q ->
+	    list_room := gen_list_room i p1.p.name !list_room
 	end
       | Gallery ->
 	begin
@@ -234,8 +246,8 @@ let analyse_person _ p1 =
 	  list_guest := p1.p.name::!list_guest;
 	  match p1.history with
 	  | [] -> ()
-	  | t::q ->
-	    list_room := gen_list_room t p1.p.name !list_room;
+	  | (i,_,_)::q ->
+	    list_room := gen_list_room i p1.p.name !list_room;
 	end
       | Gallery ->
 	begin
