@@ -150,8 +150,6 @@ let print_room_history log l =
       ph::(lr q)
   in
   let rec same_room_same_time (r1,ta1,tl1) (r2,ta2,tl2) =
-    print_string((string_of_int r1)^" : "^(string_of_int ta1)^" : "^(string_of_int tl1)^"\n");
-    print_string((string_of_int r2)^" : "^(string_of_int ta2)^" : "^(string_of_int tl2)^"\n");
     (r1 = r2) &&
       (((ta1 > ta2) && (tl1 < tl2)) ||
        ((ta1 < ta2) && (tl1 < tl2) && (ta2 < tl1)) ||
@@ -193,7 +191,6 @@ let print_room_history log l =
       end
   in
   let llr = lr l in
-  print_string("parcours4\n");
   match llr with
   | fe::q -> (parcours3 fe q)
   | _ -> failwith("Error")
