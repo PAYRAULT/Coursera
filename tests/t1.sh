@@ -1,6 +1,6 @@
 #Example
 rm -f log1
-rm -f $HOME/.logdb
+rm -f .logdb
 ./logappend -T 1 -K secret -A -E Fred log1
 echo "*************************"
 ./logappend -T 2 -K secret -A -G Jill log1

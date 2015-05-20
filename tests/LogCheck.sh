@@ -9,7 +9,7 @@ rm -f log7
 rm -f log8
 rm -f log8b
 rm -f log9
-rm -f $HOME/.logdb
+rm -f .logdb
 #Hexa non visible
 ../build/logappend -T 0 -K secret -A -G Jane log1
 ../build/logappend -T 2 -K secret -A -E Fred log1
