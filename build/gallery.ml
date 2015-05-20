@@ -20,15 +20,22 @@ type action_t =
 | LeaveR of int
 ;;
 
-type person =
+type person_idx =
   {
     name : string;
     gender : person_gender;
+  }
+;;
+
+type person =
+  {
+    p : person_idx;
     state : state_t;
     history : int list;
     enter_time : int;
     leave_time : int;
   }
+;;
 
 let list_empl = ref [];;
 let list_guest = ref [];;
@@ -37,21 +44,24 @@ let list_room = ref [];;
 type log_t =
   {
     timestamp : int;
-    hash : (string, person)t
+    hash : (person_idx, person)t
   }
 
 let find_log log n g app =
   try
-    let p = Hashtbl.find log n in
+    let fp = {name = n; gender = g} in
+    let p = Hashtbl.find log fp in
+(*
     if(p.gender <> g) then
       failwith("Gender error")
     else
+*)
       p
   with
   | Not_found ->
     if(app) then
-      {name = n;
-       gender = g;
+      {p = {name = n;
+	    gender = g};
        state = Unknown;
        history = [];
        enter_time = -1;
@@ -62,24 +72,24 @@ let find_log log n g app =
   | e -> raise e;
 ;;
 
-let create_p p next_st t =
-  { name = p.name;
-    gender = p.gender;
+let create_p p1 next_st t =
+  { p = {name = p1.p.name;
+	 gender = p1.p.gender};
     state = next_st;
     enter_time =
-      if(p.state = Unknown && next_st = Gallery) then
+      if(p1.state = Unknown && next_st = Gallery) then
 	t
       else
-	p.enter_time;
+	p1.enter_time;
     leave_time =
-      if(p.state = Gallery && next_st = Unknown) then
+      if(p1.state = Gallery && next_st = Unknown) then
 	t
       else
-	p.leave_time;
+	p1.leave_time;
     history =
       match next_st with
-      | Room(i) -> i::p.history
-      | _ -> p.history;
+      | Room(i) -> i::p1.history
+      | _ -> p1.history;
   }
 ;;
   
@@ -169,10 +179,10 @@ let rec print_hist l =
   | t::q -> print_string ((string_of_int t)^","); print_hist q
 ;;
 
-let print_person (idx:string) (pers:person) =
-  print_string ("Idx : \n"^idx);
-  print_string ("Name :"^pers.name^"/");
-  print_string ((print_gender pers.gender)^"\n");
+let print_person (idx:person_idx) (pers:person) =
+  print_string ("Idx : \n"^idx.name^"  : "^(print_gender idx.gender));
+  print_string ("Name :"^pers.p.name^"/");
+  print_string ((print_gender pers.p.gender)^"\n");
   print_string ((print_state pers.state)^"\n");
   print_hist (List.rev pers.history);
   print_string "\n";
@@ -196,40 +206,40 @@ let rec gen_list_room r n lr =
       (t,l)::(gen_list_room r n q)
 ;;
 
-let analyse_person _ p =
-  match p.gender with
+let analyse_person _ p1 =
+  match p1.p.gender with
   | Employee ->
     begin
-      match p.state with
+      match p1.state with
       | Room(_) ->
 	begin
-	  list_empl := p.name::!list_empl;
-	  match p.history with
+	  list_empl := p1.p.name::!list_empl;
+	  match p1.history with
 	  | [] -> ()
 	  | t::q ->
-	    list_room := gen_list_room t p.name !list_room
+	    list_room := gen_list_room t p1.p.name !list_room
 	end
       | Gallery ->
 	begin
-	  list_empl := p.name::!list_empl;
+	  list_empl := p1.p.name::!list_empl;
 	end
       | _ ->
 	()
     end
   | Guest ->
     begin
-      match p.state with
+      match p1.state with
       | Room(_) ->
 	begin
-	  list_guest := p.name::!list_guest;
-	  match p.history with
+	  list_guest := p1.p.name::!list_guest;
+	  match p1.history with
 	  | [] -> ()
 	  | t::q ->
-	    list_room := gen_list_room t p.name !list_room;
+	    list_room := gen_list_room t p1.p.name !list_room;
 	end
       | Gallery ->
 	begin
-	  list_guest := p.name::!list_guest;
+	  list_guest := p1.p.name::!list_guest;
 	end
       | _ ->
 	()
@@ -296,7 +306,7 @@ let load_file name token iv app =
 	(* create a new memory struture *)
 	{
 	  timestamp = -1;
-	  hash = Hashtbl.create 97
+	  hash = Hashtbl.create 1889
 	}
       end
     else

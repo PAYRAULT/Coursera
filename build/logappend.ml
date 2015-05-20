@@ -24,7 +24,7 @@ let usage_msg = "usage :\n"^
 
 (* Set the timestamp parameter *)
 let set_time_stamp t =
-  if(t < 0) then
+  if((t < 1) || (t>1073741823)) then
     (* bad argument : t is positive *)
     begin
       print_string usage_msg;
@@ -42,7 +42,7 @@ let set_time_stamp t =
 
 (* Set the room number *)      
 let set_room r =
-  if(r < 0) then
+  if((r < 0) || (r>1073741823)) then
     (* bad argument : r is positive *)
     begin
       print_string usage_msg;
@@ -183,15 +183,16 @@ let perform logdb log_file_name token time_stamp guest employee arrival leave ro
       let act = action arrival leave room in
       let next_st = next_state p.state act in
       let new_p = create_p p next_st time_stamp in
-     begin
-       Hashtbl.replace log.hash p.name new_p;
-       let niv = generate_iv logdb log_file_name iv in
-       write_file log_file_name token niv
-	 {timestamp = time_stamp; hash = log.hash};
+      begin
+	let p1 = {name = p.p.name; gender = p.p.gender} in
+	Hashtbl.replace log.hash p1 new_p;
+	let niv = generate_iv logdb log_file_name iv in
+	write_file log_file_name token niv
+	  {timestamp = time_stamp; hash = log.hash};
        (* update logdb *)
-       update_logdb logdb log_file_name token niv;
-       write_logfile logdb;
-     end;
+	update_logdb logdb log_file_name token niv;
+	write_logfile logdb;
+      end;
     end
 ;;
 
