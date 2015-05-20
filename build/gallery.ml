@@ -29,7 +29,7 @@ type person_idx =
 
 type person =
   {
-    p : person_idx;
+    pers : person_idx;
     state : state_t;
     history : (int*int*int) list;
     enter_time : int;
@@ -50,18 +50,17 @@ type log_t =
 let find_log log n g app =
   try
     let fp = {name = n; gender = g} in
-    let p = Hashtbl.find log fp in
-(*
-    if(p.gender <> g) then
+    let p1 = Hashtbl.find log fp in
+(*    if(p1.pers.gender <> g) then
       failwith("Gender error")
     else
 *)
-      p
+      p1
   with
   | Not_found ->
     if(app) then
-      {p = {name = n;
-	    gender = g};
+      {pers = {name = n;
+	       gender = g};
        state = Unknown;
        history = [];
        enter_time = -1;
@@ -73,8 +72,8 @@ let find_log log n g app =
 ;;
 
 let create_p p1 next_st t =
-  { p = {name = p1.p.name;
-	 gender = p1.p.gender};
+  { pers = {name = p1.pers.name;
+	 gender = p1.pers.gender};
     state = next_st;
     enter_time =
       if(p1.state = Unknown && next_st = Gallery) then
@@ -193,8 +192,8 @@ let rec print_hist l =
 
 let print_person (idx:person_idx) (pers:person) =
   print_string ("Idx : \n"^idx.name^"  : "^(print_gender idx.gender));
-  print_string ("Name :"^pers.p.name^"/");
-  print_string ((print_gender pers.p.gender)^"\n");
+  print_string ("Name :"^pers.pers.name^"/");
+  print_string ((print_gender pers.pers.gender)^"\n");
   print_string ((print_state pers.state)^"\n");
   print_hist (List.rev pers.history);
   print_string "\n";
@@ -219,21 +218,21 @@ let rec gen_list_room r n lr =
 ;;
 
 let analyse_person _ p1 =
-  match p1.p.gender with
+  match p1.pers.gender with
   | Employee ->
     begin
       match p1.state with
       | Room(_) ->
 	begin
-	  list_empl := p1.p.name::!list_empl;
+	  list_empl := p1.pers.name::!list_empl;
 	  match p1.history with
 	  | [] -> ()
 	  | (i,_,_)::q ->
-	    list_room := gen_list_room i p1.p.name !list_room
+	    list_room := gen_list_room i p1.pers.name !list_room
 	end
       | Gallery ->
 	begin
-	  list_empl := p1.p.name::!list_empl;
+	  list_empl := p1.pers.name::!list_empl;
 	end
       | _ ->
 	()
@@ -243,15 +242,15 @@ let analyse_person _ p1 =
       match p1.state with
       | Room(_) ->
 	begin
-	  list_guest := p1.p.name::!list_guest;
+	  list_guest := p1.pers.name::!list_guest;
 	  match p1.history with
 	  | [] -> ()
 	  | (i,_,_)::q ->
-	    list_room := gen_list_room i p1.p.name !list_room;
+	    list_room := gen_list_room i p1.pers.name !list_room;
 	end
       | Gallery ->
 	begin
-	  list_guest := p1.p.name::!list_guest;
+	  list_guest := p1.pers.name::!list_guest;
 	end
       | _ ->
 	()

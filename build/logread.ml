@@ -3,14 +3,6 @@ open Gallery
 
 exception Integrity_error ;;
 
-(*type person_type =
-  {
-    gender : person_gender;
-    name : string;
-  }
-;;
-*)
-
 let set_room = ref false;;
 let set_time = ref false;;
 let set_opt_s = ref false;;
