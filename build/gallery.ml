@@ -47,13 +47,13 @@ let list_room = ref [];;
 type log_t =
   {
     timestamp : int;
-    hash : (string, person)t
+    hash : (person_idx, person)t
   }
 
 let find_log log n g app =
   try
-    (*    let fp = {p_name = n; p_gender = g} in *)
-    let p1 = Hashtbl.find log n in
+    let fp = {p_name = n; p_gender = g} in
+    let p1 = Hashtbl.find log fp in
     if(p1.gender <> g) then
       failwith("Gender error")
     else

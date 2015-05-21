@@ -189,8 +189,8 @@ let perform logdb log_file_name token time_stamp guest employee
   let act = action arrival leave room in
   let next_st = next_state p.state act in
   let new_p = create_p p next_st time_stamp in
-  (*	let p1 = {p_name = p.name; p_gender = p.gender} in *)
-  Hashtbl.replace log.hash p.name new_p;
+  let p1 = {p_name = p.name; p_gender = p.gender} in
+  Hashtbl.replace log.hash p1 new_p;
   let niv = generate_iv logdb log_file_name log_info.iv in
   write_file log_file_name token niv
     {timestamp = time_stamp; hash = log.hash};
@@ -211,8 +211,8 @@ let perform_local log time_stamp guest employee arrival leave room =
   let next_st = next_state p.state act in
   let new_p = create_p p next_st time_stamp in
   begin
-    (*	let p1 = {p_name = p.name; p_gender = p.gender} in *)
-    Hashtbl.replace log.hash p.name new_p;
+    let p1 = {p_name = p.name; p_gender = p.gender} in
+    Hashtbl.replace log.hash p1 new_p;
     log
   end
 ;;
