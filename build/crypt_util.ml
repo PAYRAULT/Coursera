@@ -5,10 +5,11 @@ open Rand
 
 type file_authen =
   {
-    filename : string;  (* filename of the log file *)
-    mac : string;       (* Mac of the log file *)
-    iv : int;        (* IV for the AES encryption of the file *)
+    filename : string;    (* filename of the log file *)
+    mac : string option;  (* Mac of the log file *)
+    iv : int;             (* IV for the AES encryption of the file *)
   }
+;;
 
 (* the log database file *)
 let log_db_name = ".logdb";;
@@ -114,6 +115,20 @@ let find_iv logdb log_file_name =
     raise e
 ;;
 
+let find_log_info logdb log_file_name =
+  try
+    Hashtbl.find logdb log_file_name
+  with
+  | Not_found ->
+    {
+      filename = log_file_name;
+      iv = rand();
+      mac = None;
+    }
+  | e ->
+    raise e
+;;
+
 
 (* Udate the log database *)
 let update_logdb logdb logname key iv =
@@ -123,7 +138,7 @@ let update_logdb logdb logname key iv =
     let elem = Hashtbl.find logdb logname in
     let nelem = {
       filename = elem.filename;
-      mac = hash;
+      mac = Some(hash);
       iv = iv
     } in
     replace logdb logname nelem
@@ -131,32 +146,26 @@ let update_logdb logdb logname key iv =
   | Not_found ->
     let nelem = {
       filename = logname;
-      mac = hash;
+      mac = Some(hash);
       iv = iv;
     } in
     add logdb logname nelem    
   | e -> raise e
 ;;
 
-let check_integrity logdb logname key app =
-  try
-    let elem = Hashtbl.find logdb logname in
+let check_integrity loginfo logname key app =
+  match loginfo.mac with
+  | Some(mac) ->
     let hkey = sha3_224 key in
     let hash = hmac logname hkey in
-    if(elem.mac = hash) then
+    if(mac = hash) then
       true
     else
-      begin
-	false
-      end
-  with
-  | Not_found ->
-	  (* if logappend make the call and the logname doesn't exist,
-	     first time, no integrity check *)
-    begin
-      app
-    end
-  | e -> raise e
+      false
+  | None ->
+      (* if logappend make the call and the logname doesn't exist,
+	 first time, no integrity check *)
+    app
 ;;
 
 

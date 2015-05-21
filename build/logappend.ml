@@ -2,7 +2,6 @@ open Crypt_util
 open Gallery
 open Parserlist
 
-exception Integrity_error ;;
 exception Timestamp_error ;;
 
 let token = ref "";;
@@ -164,89 +163,132 @@ let load_batch_file name =
   List.rev cmd_list
 ;;
 
-let perform logdb log_file_name token time_stamp guest employee arrival leave room =
-  let iv = find_iv logdb log_file_name in
-  if(not(check_integrity logdb log_file_name token true)) then
-    begin
-      raise Integrity_error
-    end
-  else
-    begin
-      let log = load_file log_file_name token iv true in
-      check_timestamp log time_stamp;
-      let p =
-	if(guest <> "") then
-	  find_log log.hash guest Guest true 
-	else
-	  find_log log.hash employee Employee true
-      in
-      let act = action arrival leave room in
-      let next_st = next_state p.state act in
-      let new_p = create_p p next_st time_stamp in
-      begin
-	let p1 = {name = p.pers.name; gender = p.pers.gender} in 
-	Hashtbl.replace log.hash p1 new_p;
-	let niv = generate_iv logdb log_file_name iv in
-	write_file log_file_name token niv
-	  {timestamp = time_stamp; hash = log.hash};
-       (* update logdb *)
-	update_logdb logdb log_file_name token niv;
-	write_logfile logdb;
-      end;
-    end
+
+
+let close_log_file logdb log time_stamp log_file_name token iv = 
+  let niv = generate_iv logdb log_file_name iv in
+  write_file log_file_name token niv
+    {timestamp = time_stamp; hash = log.hash};
+  (* update logdb *)
+  update_logdb logdb log_file_name token niv;
+  write_logfile logdb;
 ;;
 
 
-let rec perform_batch logdb cmd =
+let perform logdb log_file_name token time_stamp guest employee
+    arrival leave room =
+  let log_info = find_log_info logdb log_file_name in
+  let log = load_log_file log_info token true in
+  check_timestamp log time_stamp;
+  let p =
+    if(guest <> "") then
+      find_log log.hash guest Guest true 
+    else
+      find_log log.hash employee Employee true
+  in
+  let act = action arrival leave room in
+  let next_st = next_state p.state act in
+  let new_p = create_p p next_st time_stamp in
+  (*	let p1 = {p_name = p.name; p_gender = p.gender} in *)
+  Hashtbl.replace log.hash p.name new_p;
+  let niv = generate_iv logdb log_file_name log_info.iv in
+  write_file log_file_name token niv
+    {timestamp = time_stamp; hash = log.hash};
+    (* update logdb *)
+  update_logdb logdb log_file_name token niv;
+  write_logfile logdb;
+;;
+
+let perform_local log time_stamp guest employee arrival leave room =
+  check_timestamp log time_stamp;
+  let p =
+    if(guest <> "") then
+      find_log log.hash guest Guest true 
+    else
+      find_log log.hash employee Employee true
+  in
+  let act = action arrival leave room in
+  let next_st = next_state p.state act in
+  let new_p = create_p p next_st time_stamp in
+  begin
+    (*	let p1 = {p_name = p.name; p_gender = p.gender} in *)
+    Hashtbl.replace log.hash p.name new_p;
+    log
+  end
+;;
+
+
+let rec perform_batch logdb log_info log_file t cmd =
+  let log = perform_local log_file t.time_stamp t.guest t.employee
+    t.arrival t.leave t.room
+  in
   match cmd with
-  | [] -> ()
-  | t::q ->
+  | [] ->
+    close_log_file logdb log t.time_stamp t.log_file_name t.token log_info.iv ;
+    
+  | t1::q ->
     begin
-      perform logdb t.log_file_name t.token t.time_stamp t.guest t.employee
-	t.arrival t.leave t.room;
-      perform_batch logdb q
+      if(t.log_file_name = t1.log_file_name) then
+	begin
+	  perform_batch logdb log_info log t1 q
+	end
+      else
+	begin
+	  close_log_file logdb log_file t.time_stamp t.log_file_name t.token log_info.iv ;
+	  let log_info = find_log_info logdb t1.log_file_name in
+          let log = load_log_file log_info t1.token true in
+	  perform_batch logdb log_info log t1 q
+	end
     end
 ;;
 
 (* Main of the logappend primitive *)
 let main =
   try
-    begin
-      let speclist =
-	[("-K", Arg.String(set_token),
-	  ": Token used to authenticate the log. ");
-	 ("-B", Arg.String(set_batch_file_name),
-	  ": Specifies a batch file of commands");
-	 ("-R", Arg.Int(set_room),
-	  ": Specifies the room ID for an event.");
-	 ("-E", Arg.String(set_employee),
-	  ": Name of employee.");
-	 ("-G", Arg.String(set_guest),
-	  ": Name of guest.");
-	 ("-T", Arg.Int(set_time_stamp),
-	  ": Gives the total time spent in the gallery by an employee or guest.");
-	 ("-A", Arg.Set(arrival),
-	  ": Specify that the current event is an arrival;");
-	 ("-L", Arg.Set(leave),
-	  ": Specify that the current event is a departure");
-	]
-      in Arg.parse_argv ?current:(Some(ref 0)) Sys.argv speclist (set_log_file_name) usage_msg;
-      let logdb = load_logfile true in 
-      if(!batch_file_name = "") then
-	begin
-	  check_arg !log_file_name !token !time_stamp !guest !employee
-	    !arrival !leave !room;
-	  perform logdb !log_file_name !token !time_stamp !guest !employee
-	    !arrival !leave !room
-	end
-      else
-	begin
-	  let cmd = load_batch_file !batch_file_name in
-	  perform_batch logdb cmd
-	end;
-
-      exit 0
-    end
+    let speclist =
+      [("-K", Arg.String(set_token),
+	": Token used to authenticate the log. ");
+       ("-B", Arg.String(set_batch_file_name),
+	": Specifies a batch file of commands");
+       ("-R", Arg.Int(set_room),
+	": Specifies the room ID for an event.");
+       ("-E", Arg.String(set_employee),
+	": Name of employee.");
+       ("-G", Arg.String(set_guest),
+	": Name of guest.");
+       ("-T", Arg.Int(set_time_stamp),
+	": Gives the total time spent in the gallery by an employee or guest.");
+       ("-A", Arg.Set(arrival),
+	": Specify that the current event is an arrival;");
+       ("-L", Arg.Set(leave),
+	": Specify that the current event is a departure");
+      ]
+    in
+    Arg.parse_argv ?current:(Some(ref 0)) Sys.argv speclist
+      (set_log_file_name) usage_msg;
+    let logdb = load_logfile true
+    in 
+    if(!batch_file_name = "") then
+      begin
+	check_arg !log_file_name !token !time_stamp !guest !employee
+	  !arrival !leave !room;
+	perform logdb !log_file_name !token !time_stamp !guest !employee
+	  !arrival !leave !room
+      end
+    else
+      begin
+	let cmd = load_batch_file !batch_file_name in
+	match cmd with
+	| [] -> ()
+	| t::q ->
+	  begin
+	    let log_info = find_log_info logdb t.log_file_name in
+	    let log = load_log_file log_info !token true in
+	    perform_batch logdb log_info log t q
+	  end
+      end;
+	
+    exit 0
   with
   | Failure(s) ->
     print_string ("Failure :"^s^"\n");

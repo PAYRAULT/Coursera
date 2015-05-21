@@ -58,7 +58,7 @@ let set_employee emp =
   check_name emp;
   if(!set_opt_i) then
     begin
-      opt_i_list := {gender = Employee; name = emp}::!opt_i_list
+      opt_i_list := {p_gender = Employee; p_name = emp}::!opt_i_list
     end
   else
     if(!employee = "") then
@@ -75,7 +75,7 @@ let set_employee emp =
 let set_guest gu =
   if(!set_opt_i) then
     begin
-      opt_i_list := {gender = Guest; name = gu}::!opt_i_list
+      opt_i_list := {p_gender = Guest; p_name = gu}::!opt_i_list
     end
   else
     if(!guest = "") then
@@ -131,10 +131,10 @@ let print_room_history log l =
     | t::q ->
       let ph =
 	try
-	  if(t.gender = Guest) then
-	    let ppp = find_log log t.name Guest false in ppp.history
+	  if(t.p_gender = Guest) then
+	    let ppp = find_log log t.p_name Guest false in ppp.history
 	  else
-	    let ppp = find_log log t.name Employee false in ppp.history
+	    let ppp = find_log log t.p_name Employee false in ppp.history
 	with
 	| Not_found ->
 	  []
@@ -187,7 +187,7 @@ let print_room_history log l =
   | fe::q -> (parcours3 fe q)
   | _ -> failwith("Error")
 ;;
-
+ 
 
 let main =
   try
@@ -211,41 +211,36 @@ let main =
       in Arg.parse_argv ?current:(Some(ref 0)) Sys.argv speclist (set_log_file_name) usage_msg;
       check_arg();
       let logdb = load_logfile false in
-      if( not(check_integrity logdb !log_file_name !token false)) then
-	raise Integrity_error
-      else
-	begin
-	  let iv = find_iv logdb !log_file_name in
-	  let log = load_file !log_file_name !token iv false in
-	  if(!set_room) then  
-	    let p =
-	      if(!guest <> "") then
-		find_log log.hash !guest Guest false
-	      else
-		find_log log.hash !employee Employee false
-	    in
-	    print_hist (List.rev p.history);
-	  else if(!set_time) then
-	    let p =
-	      if(!guest <> "") then
-		find_log log.hash !guest Guest false
-	      else
-		find_log log.hash !employee Employee false
-	    in
-	    if(p.leave_time <> -1) then
-	      print_string ((string_of_int (p.leave_time - p.enter_time))^"\n")
-	    else
-	      print_string((string_of_int 0)^"\n")
-	  else if(!set_opt_i) then
-	    begin
-	      let lr = print_room_history log.hash !opt_i_list
-	      in
-	      print_rooms_i lr
-	    end
+      let log_info = find_log_info logdb !log_file_name in
+      let log = load_log_file log_info !token false in
+      if(!set_room) then  
+	let p =
+	  if(!guest <> "") then
+	    find_log log.hash !guest Guest false
 	  else
-	    print_result_s log.hash;
-	    exit 0;
+	    find_log log.hash !employee Employee false
+	in
+	print_hist (List.rev p.history);
+      else if(!set_time) then
+	let p =
+	  if(!guest <> "") then
+	    find_log log.hash !guest Guest false
+	  else
+	    find_log log.hash !employee Employee false
+	in
+	if(p.leave_time <> -1) then
+	  print_string ((string_of_int (p.leave_time - p.enter_time))^"\n")
+	else
+	  print_string((string_of_int 0)^"\n")
+      else if(!set_opt_i) then
+	begin
+	  let lr = print_room_history log.hash !opt_i_list
+	  in
+	  print_rooms_i lr
 	end
+      else
+	print_result_s log.hash;
+	exit 0;
     end
   with
   | Failure(s) ->

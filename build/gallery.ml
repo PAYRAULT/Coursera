@@ -1,6 +1,8 @@
 open Hashtbl
 open Crypt_util
 
+exception Integrity_error ;;
+
 type person_gender =
 | Employee
 | Guest
@@ -22,14 +24,15 @@ type action_t =
 
 type person_idx =
   {
-    name : string;
-    gender : person_gender;
+    p_name : string;
+    p_gender : person_gender;
   }
 ;;
 
 type person =
   {
-    pers : person_idx;
+    name : string;
+    gender : person_gender;
     state : state_t;
     history : (int*int*int) list;
     enter_time : int;
@@ -44,23 +47,22 @@ let list_room = ref [];;
 type log_t =
   {
     timestamp : int;
-    hash : (person_idx, person)t
+    hash : (string, person)t
   }
 
 let find_log log n g app =
   try
-    let fp = {name = n; gender = g} in
-    let p1 = Hashtbl.find log fp in
-(*    if(p1.pers.gender <> g) then
+    (*    let fp = {p_name = n; p_gender = g} in *)
+    let p1 = Hashtbl.find log n in
+    if(p1.gender <> g) then
       failwith("Gender error")
     else
-*)
       p1
   with
   | Not_found ->
     if(app) then
-      {pers = {name = n;
-	       gender = g};
+      {name = n;
+       gender = g;
        state = Unknown;
        history = [];
        enter_time = -1;
@@ -72,8 +74,8 @@ let find_log log n g app =
 ;;
 
 let create_p p1 next_st t =
-  { pers = {name = p1.pers.name;
-	 gender = p1.pers.gender};
+  { name = p1.name;
+    gender = p1.gender;
     state = next_st;
     enter_time =
       if(p1.state = Unknown && next_st = Gallery) then
@@ -191,9 +193,9 @@ let rec print_hist l =
 ;;
 
 let print_person (idx:person_idx) (pers:person) =
-  print_string ("Idx : \n"^idx.name^"  : "^(print_gender idx.gender));
-  print_string ("Name :"^pers.pers.name^"/");
-  print_string ((print_gender pers.pers.gender)^"\n");
+  print_string ("Idx : \n"^idx.p_name^"  : "^(print_gender idx.p_gender));
+  print_string ("Name :"^pers.name^"/");
+  print_string ((print_gender pers.gender)^"\n");
   print_string ((print_state pers.state)^"\n");
   print_hist (List.rev pers.history);
   print_string "\n";
@@ -218,21 +220,21 @@ let rec gen_list_room r n lr =
 ;;
 
 let analyse_person _ p1 =
-  match p1.pers.gender with
+  match p1.gender with
   | Employee ->
     begin
       match p1.state with
       | Room(_) ->
 	begin
-	  list_empl := p1.pers.name::!list_empl;
+	  list_empl := p1.name::!list_empl;
 	  match p1.history with
 	  | [] -> ()
 	  | (i,_,_)::q ->
-	    list_room := gen_list_room i p1.pers.name !list_room
+	    list_room := gen_list_room i p1.name !list_room
 	end
       | Gallery ->
 	begin
-	  list_empl := p1.pers.name::!list_empl;
+	  list_empl := p1.name::!list_empl;
 	end
       | _ ->
 	()
@@ -242,15 +244,15 @@ let analyse_person _ p1 =
       match p1.state with
       | Room(_) ->
 	begin
-	  list_guest := p1.pers.name::!list_guest;
+	  list_guest := p1.name::!list_guest;
 	  match p1.history with
 	  | [] -> ()
 	  | (i,_,_)::q ->
-	    list_room := gen_list_room i p1.pers.name !list_room;
+	    list_room := gen_list_room i p1.name !list_room;
 	end
       | Gallery ->
 	begin
-	  list_guest := p1.pers.name::!list_guest;
+	  list_guest := p1.name::!list_guest;
 	end
       | _ ->
 	()
@@ -334,6 +336,19 @@ let write_file name token iv log =
   with
   | e -> raise e
 ;;
+
+
+let load_log_file log_info token app =
+  if(not(check_integrity log_info log_info.filename token app)) then
+    begin
+      raise Integrity_error
+    end
+  else
+    begin
+      load_file log_info.filename token log_info.iv app
+    end
+;;
+
 
 let check_name s =
   let good_string c =
