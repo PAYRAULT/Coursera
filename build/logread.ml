@@ -1,7 +1,6 @@
 open Crypt_util
 open Gallery
 
-exception Integrity_error ;;
 
 let set_room = ref false;;
 let set_time = ref false;;

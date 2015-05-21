@@ -291,7 +291,7 @@ let main =
     exit 0
   with
   | Failure(s) ->
-    print_string ("Failure :"^s^"\n");
+    (* print_string ("Failure :"^s^"\n"); *)
     exit 0
   | Timestamp_error ->
     print_string ("invalid\n");
@@ -308,6 +308,6 @@ let main =
     print_string "invalid\n";
     exit 255
   | e ->
-    print_string ("Exc : "^(Printexc.to_string e)^"\n");
+    (* print_string ("Exc : "^(Printexc.to_string e)^"\n");*)
     exit 0
 ;;
