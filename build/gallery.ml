@@ -53,11 +53,7 @@ type log_t =
 let find_log log n g app =
   try
     let fp = {p_name = n; p_gender = g} in
-    let p1 = Hashtbl.find log fp in
-    if(p1.gender <> g) then
-      failwith("Gender error")
-    else
-      p1
+    Hashtbl.find log fp 
   with
   | Not_found ->
     if(app) then
