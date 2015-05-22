@@ -47,6 +47,7 @@ let list_room = ref [];;
 type log_t =
   {
     timestamp : int;
+    filename : string;
     hash : (person_idx, person)t
   }
 
@@ -309,13 +310,18 @@ let load_file name token iv timestamp app =
   try
     if( Sys.file_exists name ) then
       let log = Crypt_util.load_authen_file token iv name in
-      log
+(*      if(log.filename <> name) then
+	raise Integrity_error
+      else
+*)
+	log
     else if(app) then
       begin
 	(* create a new memory struture *)
 	{
 	  timestamp = timestamp-1;
-	  hash = Hashtbl.create 1889
+	  hash = Hashtbl.create 1889;
+	  filename = name;
 	}
       end
     else

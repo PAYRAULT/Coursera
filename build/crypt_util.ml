@@ -159,9 +159,13 @@ let check_integrity loginfo logname key app =
     let hkey = sha3_224 key in
     let hash = hmac logname hkey in
     if(mac = hash) then
-      true
+      begin
+	true
+      end
     else
-      false
+      begin
+	false
+      end
   | None ->
       (* if logappend make the call and the logname doesn't exist,
 	 first time, no integrity check *)

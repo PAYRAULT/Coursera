@@ -163,7 +163,7 @@ let load_batch_file name =
 let close_log_file logdb log time_stamp log_file_name token iv = 
   let niv = generate_iv logdb log_file_name iv in
   write_file log_file_name token niv
-    {timestamp = time_stamp; hash = log.hash};
+    {timestamp = time_stamp; hash = log.hash; filename = log_file_name};
   (* update logdb *)
   update_logdb logdb log_file_name token niv;
   write_logfile logdb;
@@ -189,7 +189,7 @@ let perform logdb log_file_name token time_stamp guest employee
   close_log_file logdb log time_stamp log_file_name token log_info.iv;
 ;;
 
-let perform_local log time_stamp guest employee arrival leave room =
+let perform_local log file_name time_stamp guest employee arrival leave room =
   check_timestamp log time_stamp;
   let p =
     if(guest <> "") then
@@ -203,13 +203,13 @@ let perform_local log time_stamp guest employee arrival leave room =
   begin
     let p1 = {p_name = p.name; p_gender = p.gender} in
     Hashtbl.replace log.hash p1 new_p;
-    {timestamp = time_stamp; hash = log.hash}
+    {timestamp = time_stamp; hash = log.hash; filename = file_name}
   end
 ;;
 
 
 let rec perform_batch logdb log_info log_file t cmd =
-  let log = perform_local log_file t.time_stamp t.guest t.employee
+  let log = perform_local log_file t.log_file_name t.time_stamp t.guest t.employee
     t.arrival t.leave t.room
   in
   match cmd with
