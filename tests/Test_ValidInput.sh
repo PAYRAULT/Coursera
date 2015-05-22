@@ -1,18 +1,18 @@
 #ReInit
 rm -f log1
-rm -f $HOME/.logdb
+rm -f .logdb
 
 #Order of argument
-../build/logappend -T 0 -K secret0 -A -G Fred log1
-../build/logappend -T 1 -K secret0 -G Jane -A log1
-../build/logappend -T 2 -K secret0 -A -E Toto log1
+../build/logappend -T 1 -K secret0 -A -G Fred log1
+../build/logappend -T 2 -K secret0 -G Jane -A log1
+../build/logappend -T 3 -K secret0 -A -E Toto log1
 ../build/logread -K secret0 -S log1
 
 #ReInit
 rm -f log1
-rm -f $HOME/.logdb
-../build/logappend -T 0 -K secret -A -E Fred log1
-../build/logappend -T 1 -K secret -A -E Fred -R 1 log1
+rm -f .logdb
+../build/logappend -T 1 -K secret -A -E Fred log1
+../build/logappend -T 2 -K secret -A -E Fred -R 1 log1
 ../build/logappend -T 5 -K secret -L -E Fred -R 1 log1
 ../build/logappend -T 6 -K secret -A -E Fred -R 2 log1
 ../build/logappend -T 7 -K secret -L -E Fred -R 2 log1

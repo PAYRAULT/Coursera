@@ -1,5 +1,5 @@
 # Fred goes from room to room and exits
-rm ~/.logdb; rm -f log1
+rm -f .logdb; rm -f log1
 ./logappend -T 1  -K secret -A -E Fred log1
 echo "                              " $?
 ./logappend -T 3  -K secret -A -E Fred -R 1 log1
