@@ -1,7 +1,6 @@
 open Crypt_util
 open Gallery
 
-
 let set_room = ref false;;
 let set_time = ref false;;
 let set_opt_s = ref false;;
@@ -29,7 +28,7 @@ let set_token tk =
     end
   else
     begin
-      failwith("Option -K called twice.");
+      raise (Arg.Bad "Option -K called twice.");
     end
 ;;
 
@@ -42,7 +41,7 @@ let set_log_file_name f =
     end
   else
     begin
-      failwith("Option -S called twice or called with a extra file name.");
+      raise ( Arg.Bad "Option -S called twice or called with a extra file name.");
     end
 ;;
 
@@ -66,7 +65,7 @@ let set_employee emp =
       end
     else
       begin
-	failwith("Option -E called twice.");
+	raise( Arg.Bad "Option -E called twice.");
       end
 ;;  
 
@@ -84,7 +83,7 @@ let set_guest gu =
       end
     else
       begin
-	failwith("Option -G called twice.");
+	raise(Arg.Bad "Option -G called twice.");
       end
 ;;  
 
@@ -98,23 +97,23 @@ let unimplemented() =
 let check_arg() =
   if(!token = "" || !log_file_name = "") then
     begin
-      failwith("Options -K and logfile are mandatory");     
+      raise( Arg.Bad "Options -K and logfile are mandatory");     
     end
   else if(!set_room) then
     if(not(ouex (!guest = "") (!employee = ""))) then
       begin
-	failwith("Options -E and -G are exclusive and at least once should be called");
+	raise(Arg.Bad "Options -E and -G are exclusive and at least once should be called");
       end
     else if(!set_opt_s || !set_opt_i) then
       begin
-	failwith("Options -R, -I and -S are exclusive");
+	raise(Arg.Bad "Options -R, -I and -S are exclusive");
       end
     else
       ()
   else if(!set_time) then
     if(!set_opt_s || !set_opt_i) then
       begin
-	failwith("Options -T and -S are exclusive");
+	raise( Arg.Bad "Options -T and -S are exclusive");
       end
     else
       ()
@@ -248,7 +247,7 @@ let main =
   | Integrity_error ->
     print_string ("invalid\n");
     exit 255
-  | Arg.Bad(e) ->
+  | Arg.Bad(_) ->
     print_string ("invalid\n");
     exit 255
   | e ->
