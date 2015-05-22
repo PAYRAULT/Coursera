@@ -309,7 +309,7 @@ let print_result_s log =
 
 (* Load the log file into memory or create a new hashtable if log file not existing for logappend primitive. 
 If file is not existing for logread primitive abort *)
-let load_file name token iv app =
+let load_file name token iv timestamp app =
   try
     if( Sys.file_exists name ) then
       let log = Crypt_util.load_authen_file token iv name in
@@ -318,7 +318,7 @@ let load_file name token iv app =
       begin
 	(* create a new memory struture *)
 	{
-	  timestamp = -1;
+	  timestamp = timestamp-1;
 	  hash = Hashtbl.create 1889
 	}
       end
@@ -338,14 +338,14 @@ let write_file name token iv log =
 ;;
 
 
-let load_log_file log_info token app =
+let load_log_file log_info token timestamp app =
   if(not(check_integrity log_info log_info.filename token app)) then
     begin
       raise Integrity_error
     end
   else
     begin
-      load_file log_info.filename token log_info.iv app
+      load_file log_info.filename token log_info.iv timestamp app
     end
 ;;
 

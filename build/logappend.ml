@@ -178,7 +178,7 @@ let close_log_file logdb log time_stamp log_file_name token iv =
 let perform logdb log_file_name token time_stamp guest employee
     arrival leave room =
   let log_info = find_log_info logdb log_file_name in
-  let log = load_log_file log_info token true in
+  let log = load_log_file log_info token time_stamp true in
   check_timestamp log time_stamp;
   let p =
     if(guest <> "") then
@@ -191,12 +191,7 @@ let perform logdb log_file_name token time_stamp guest employee
   let new_p = create_p p next_st time_stamp in
   let p1 = {p_name = p.name; p_gender = p.gender} in
   Hashtbl.replace log.hash p1 new_p;
-  let niv = generate_iv logdb log_file_name log_info.iv in
-  write_file log_file_name token niv
-    {timestamp = time_stamp; hash = log.hash};
-    (* update logdb *)
-  update_logdb logdb log_file_name token niv;
-  write_logfile logdb;
+  close_log_file logdb log time_stamp log_file_name token log_info.iv;
 ;;
 
 let perform_local log time_stamp guest employee arrival leave room =
@@ -213,7 +208,7 @@ let perform_local log time_stamp guest employee arrival leave room =
   begin
     let p1 = {p_name = p.name; p_gender = p.gender} in
     Hashtbl.replace log.hash p1 new_p;
-    log
+    {timestamp = time_stamp; hash = log.hash}
   end
 ;;
 
@@ -236,7 +231,7 @@ let rec perform_batch logdb log_info log_file t cmd =
 	begin
 	  close_log_file logdb log_file t.time_stamp t.log_file_name t.token log_info.iv ;
 	  let log_info = find_log_info logdb t1.log_file_name in
-          let log = load_log_file log_info t1.token true in
+          let log = load_log_file log_info t1.token t1.time_stamp true in
 	  perform_batch logdb log_info log t1 q
 	end
     end
@@ -283,15 +278,15 @@ let main =
 	| t::q ->
 	  begin
 	    let log_info = find_log_info logdb t.log_file_name in
-	    let log = load_log_file log_info !token true in
-	    perform_batch logdb log_info log t q
+	    let logt = load_log_file log_info !token t.time_stamp true in
+	    perform_batch logdb log_info logt t q
 	  end
       end;
 	
     exit 0
   with
   | Failure(s) ->
-    (* print_string ("Failure :"^s^"\n"); *)
+    print_string ("Failure :"^s^"\n");
     exit 0
   | Timestamp_error ->
     print_string ("invalid\n");
@@ -300,7 +295,7 @@ let main =
     print_string ("invalid\n");
     exit 255
   | Lexer.LexError(s) ->
-    (* print_string ("Batch lexing error : "^s^"....\n"); *)
+    print_string ("Batch lexing error : "^s^"....\n");
     exit 255
   | Invalid_argument(_) ->
     exit 255
@@ -308,6 +303,6 @@ let main =
     print_string "invalid\n";
     exit 255
   | e ->
-    (* print_string ("Exc : "^(Printexc.to_string e)^"\n");*)
+    print_string ("Exc : "^(Printexc.to_string e)^"\n");
     exit 0
 ;;

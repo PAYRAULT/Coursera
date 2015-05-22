@@ -211,7 +211,7 @@ let main =
       check_arg();
       let logdb = load_logfile false in
       let log_info = find_log_info logdb !log_file_name in
-      let log = load_log_file log_info !token false in
+      let log = load_log_file log_info !token 0 false in
       if(!set_room) then  
 	let p =
 	  if(!guest <> "") then
