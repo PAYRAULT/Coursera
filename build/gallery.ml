@@ -355,7 +355,7 @@ let check_name s =
     if((c >= 'a' && c <= 'z') || (c>='A' && c<='Z')) then
       ()
     else
-      failwith("Illegal name")
+      raise (Arg.Bad "Illegal name")
   in
   String.iter good_string s
 ;;
@@ -365,7 +365,7 @@ let check_token s =
     if((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || (c>='0' && c<= '9')) then
       ()
     else
-      failwith("Illegal token")
+      raise (Arg.Bad "Illegal token")
   in
   String.iter good_string s
 ;;
@@ -376,7 +376,7 @@ let check_filename s =
 	  || (c = '.') || (c = '/') || (c = '_') ) then
       ()
     else
-      failwith("Illegal filename")
+      raise (Arg.Bad "Illegal file name")
   in
   String.iter good_string s
 ;;

@@ -26,8 +26,7 @@ let set_time_stamp t =
   if((t < 1) || (t>1073741823)) then
     (* bad argument : t is positive *)
     begin
-      print_string usage_msg;
-      failwith("Timestamp should be positive.")
+       raise (Arg.Bad "Wrong time stamp.")
     end
   else if(!time_stamp = -1) then
     (* Time stamp never assigned *)
@@ -35,8 +34,7 @@ let set_time_stamp t =
   else
     (* Time stamp already assigned *)
     begin
-      print_string usage_msg;
-      failwith("Option -T called twice.")
+       raise (Arg.Bad "Option -T called twice.")
     end
 
 (* Set the room number *)      
@@ -44,8 +42,7 @@ let set_room r =
   if((r < 0) || (r>1073741823)) then
     (* bad argument : r is positive *)
     begin
-      print_string usage_msg;
-      failwith("Room is a positive number")
+      raise (Arg.Bad "Wrong room number")
     end
   else if(!room = -1) then
     (* Time stamp never assigned *)
@@ -53,8 +50,7 @@ let set_room r =
   else
     (* Time stamp already assigned *)
     begin
-      print_string usage_msg;
-      failwith("Option -R called twice.")
+      raise (Arg.Bad "Option -R called twice.")
     end
     
 (* Set the token number *)
@@ -66,8 +62,7 @@ let set_token tk =
     end
   else
     begin
-      print_string usage_msg;
-      failwith("Option -K called twice.")
+      raise (Arg.Bad "Option -K called twice.")
     end
 ;;
 
@@ -80,8 +75,7 @@ let set_log_file_name f =
     end
   else
     begin
-      print_string usage_msg;
-      failwith("Option -S called twice or called with a extra file name.")
+      raise (Arg.Bad "Option -S called twice or called with a extra file name.")
     end
 ;;
 
@@ -92,8 +86,7 @@ let set_batch_file_name f =
     batch_file_name := f
   else
     begin
-      print_string usage_msg;
-      failwith("Option -B called twice")
+      raise (Arg.Bad "Option -B called twice")
     end
 ;;
 
@@ -106,8 +99,7 @@ let set_employee emp =
     end
   else
     begin
-      print_string usage_msg;
-      failwith("Option -E called twice.");
+      raise (Arg.Bad "Option -E called twice.");
     end
 ;;  
 
@@ -120,31 +112,34 @@ let set_guest gu =
     end
   else
     begin
-      print_string usage_msg;
-      failwith("Option -G called twice.");
+      raise (Arg.Bad "Option -G called twice.");
    end
 ;;  
 
 (* Check the consistency of the arguments *)
-let check_arg log_file_name token time_stamp guest employee
+let check_arg batch_file_name log_file_name token time_stamp guest employee
     arrival leave room =
-  if(token = "" || time_stamp = -1 || log_file_name = "") then
+  if(batch_file_name = "") then
     begin
-      print_string usage_msg;
-      failwith("Options -K, -T and logfile are mandatory")
+      if(token = "" || time_stamp = -1 || log_file_name = "") then
+	begin
+	  raise (Arg.Bad "Options -K, -T and logfile are mandatory")
+	end
+      else if(not(ouex arrival leave)) then
+	begin
+	  raise (Arg.Bad "Options -A and -L are exclusive and at least once should be called");
+	end
+      else if(not(ouex (guest = "") (employee = ""))) then
+	begin
+	  raise (Arg.Bad "Options -E and -G are exclusive and at least once should be called");
+	end
+      else 
+	()
     end
-  else if(not(ouex arrival leave)) then
-    begin
-      print_string usage_msg;
-      failwith("Options -A and -L are exclusive and at least once should be called");
-    end
-  else if(not(ouex (guest = "") (employee = ""))) then
-    begin
-      print_string usage_msg;
-      failwith("Options -E and -G are exclusive and at least once should be called");
-    end
-  else 
-    ()
+  else
+    if(token <> "" || time_stamp <> -1 || log_file_name <> "" ||
+    guest <> "" || employee <> "") then
+      raise (Arg.Bad "Options -B is only with -K.");
 ;;
 
 (* Check if the timestamp is going greater between calls *)
@@ -239,7 +234,6 @@ let rec perform_batch logdb log_info log_file t cmd =
 
 (* Main of the logappend primitive *)
 let main =
-  try
     let speclist =
       [("-K", Arg.String(set_token),
 	": Token used to authenticate the log. ");
@@ -259,50 +253,56 @@ let main =
 	": Specify that the current event is a departure");
       ]
     in
-    Arg.parse_argv ?current:(Some(ref 0)) Sys.argv speclist
-      (set_log_file_name) usage_msg;
-    let logdb = load_logfile true
-    in 
-    if(!batch_file_name = "") then
-      begin
-	check_arg !log_file_name !token !time_stamp !guest !employee
-	  !arrival !leave !room;
-	perform logdb !log_file_name !token !time_stamp !guest !employee
-	  !arrival !leave !room
-      end
-    else
-      begin
-	let cmd = load_batch_file !batch_file_name in
-	match cmd with
-	| [] -> ()
-	| t::q ->
-	  begin
-	    let log_info = find_log_info logdb t.log_file_name in
-	    let logt = load_log_file log_info !token t.time_stamp true in
-	    perform_batch logdb log_info logt t q
-	  end
-      end;
-	
-    exit 0
-  with
-  | Failure(s) ->
-    print_string ("Failure :"^s^"\n");
-    exit 0
-  | Timestamp_error ->
-    print_string ("invalid\n");
-    exit 255
-  | Integrity_error ->
-    print_string ("invalid\n");
-    exit 255
-  | Lexer.LexError(s) ->
-    print_string ("Batch lexing error : "^s^"....\n");
-    exit 255
-  | Invalid_argument(_) ->
-    exit 255
-  | Arg.Bad(e) ->
-    print_string "invalid\n";
-    exit 255
-  | e ->
-    print_string ("Exc : "^(Printexc.to_string e)^"\n");
-    exit 0
+    try
+      Arg.parse_argv ?current:(Some(ref 0)) Sys.argv speclist
+	(set_log_file_name) usage_msg;
+      let logdb = load_logfile true
+      in 
+      check_arg !batch_file_name !log_file_name !token !time_stamp !guest
+	!employee !arrival !leave !room;
+     if(!batch_file_name = "") then
+	begin
+	  perform logdb !log_file_name !token !time_stamp !guest !employee
+	    !arrival !leave !room
+	end
+      else
+	begin
+	  let cmd = load_batch_file !batch_file_name in
+	  match cmd with
+	  | [] -> ()
+	  | t::q ->
+	    begin
+	      let log_info = find_log_info logdb t.log_file_name in
+	      let logt = load_log_file log_info !token t.time_stamp true in
+	      perform_batch logdb log_info logt t q
+	    end
+	end;
+      
+      exit 0
+    with
+    | Failure(s) ->
+      print_string ("Failure : "^s^"\n");
+      exit 0
+    | Timestamp_error ->
+      print_string ("invalid\n");
+      exit 255
+    | Integrity_error ->
+      print_string ("invalid\n");
+      exit 255
+    | Lexer.LexError(s) ->
+    (*print_string ("Batch lexing error : "^s^"....\n");*)
+      exit 255
+    | Invalid_argument(_) ->
+      exit 255
+    | Arg.Bad(e) ->
+      if(!batch_file_name = "") then
+	begin
+	  print_string "invalid\n";
+	  exit 255
+	end
+      else
+	exit 0
+    | e ->
+      print_string ("Exc : "^(Printexc.to_string e)^"\n");
+      exit 0
 ;;
