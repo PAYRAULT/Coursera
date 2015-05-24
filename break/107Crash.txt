@@ -1,0 +1,1 @@
+Logread with option -E, If I don't provide option -R with a room, It results with segmentation fault.
