@@ -1,0 +1,1 @@
+When an employee arrive, result is correct but when employee go in a room, if I read all logfile nothing is printed.
