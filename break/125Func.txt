@@ -1,0 +1,1 @@
+When a guest arrive with an incorrect time stamp (inferior to the last one), logappend add the guest.
