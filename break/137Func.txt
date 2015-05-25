@@ -1,0 +1,1 @@
+If you try to read room with en incorrect type (Guest instead of Employee), application doesn't return invalid.
