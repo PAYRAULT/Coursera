@@ -1,1 +1,0 @@
-Employees and guests can have the same name. this is not the case with your application
