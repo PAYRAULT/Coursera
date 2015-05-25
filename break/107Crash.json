@@ -12,7 +12,7 @@
     },
     {
       "program": "logread",
-      "args": [ "-K", "secret1", "-E", "Fred", "log1"],
+      "args": [ "-K", "secret1", "-E", "Fred", "log1"]
     }
-  ],
+  ]
 }
