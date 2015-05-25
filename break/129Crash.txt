@@ -1,0 +1,1 @@
+An employee X arrive. If try to read the room of X as a guest (X as guest not in the log) application crash
