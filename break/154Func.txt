@@ -1,0 +1,1 @@
+If I try to read the room of an employee X but with Guest parameter application doens't return invalid. but nothing
