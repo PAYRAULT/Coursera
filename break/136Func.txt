@@ -1,0 +1,2 @@
+Range of time stamp is from 1 to 1073741823.
+Application accepts 0 for time stamo
