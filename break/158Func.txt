@@ -1,0 +1,1 @@
+No invalid message if I add a person with same time stamp.
