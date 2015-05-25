@@ -22,6 +22,7 @@ $BUILD/logappend -T 2 -K secret -A -G Fred01 $LOG
 $BUILD/logappend -T 3 -K secret -A -G @Fred $LOG
 $BUILD/logappend -T 4 -K secret -A -G Fre01d $LOG
 $BUILD/logappend -T 5 -K secret -A -G Fre@d $LOG
+rm -f $LOG
 
 #Incorrect Timestamp
 echo "Error invalid time stamp expected 0"
@@ -81,7 +82,12 @@ $BUILD/logappend -T 4 -K secret1 -L -G fred $LOG
 $BUILD/logappend -T 5 -K secret1 -A -G Fred -R 0 $LOG
 $BUILD/logappend -T 6 -K secret1 -A -G John -R 0 $LOG
 $BUILD/logread -K secret1 -S $LOG
+rm -f $LOG
 
+#Guest & Employee with same name
+$BUILD/logappend -T 1 -K secret -A -G John $LOG
+$BUILD/logappend -T 2 -K secret -A -E John $LOG
+$BUILD/logread -K secret -S $LOG
 rm -f $LOG
 
 
