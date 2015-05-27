@@ -34,12 +34,13 @@ def allsecret():
 
 def createlstsecret(size):
 	s=[]
-	chars=string.ascii_uppercase+string.ascii_lowercase+string.digits
-	g = ''.join(random.choice(chars) for _ in range(size))
-	while(g in s):
-		chars=string.ascii_uppercase+string.ascii_lowercase
+	for i in range(1000000):
+		chars=string.ascii_uppercase+string.ascii_lowercase+string.digits
 		g = ''.join(random.choice(chars) for _ in range(size))
-	s.append(g)
+		while(g in s):
+			chars=string.ascii_uppercase+string.ascii_lowercase
+			g = ''.join(random.choice(chars) for _ in range(size))
+		s.append(g)
 	return s
 
 
