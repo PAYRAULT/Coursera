@@ -1,0 +1,2 @@
+Range of room ID is from 0 to 1073741823.
+Application accepts value 'a' to 'f' for room ID
