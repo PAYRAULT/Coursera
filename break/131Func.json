@@ -10,9 +10,6 @@
       "program": "logappend",
       "args": ["-K", "secret", "-T", "11", "-G", "Fredo", "-A", "-R", "a", "log"]
     },
-    {
-      "program": "logread",
-      "args": [ "-K", "secret", "-S", "log"],
-    }
   ],
+  "output":"invalid"  
 }

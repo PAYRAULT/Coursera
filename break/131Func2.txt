@@ -1,0 +1,2 @@
+Range of Timestamp is from 1 to 1073741823.
+Application accepts value '2C" for timestamp
