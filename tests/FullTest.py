@@ -10,15 +10,27 @@ def allT():
 		print "***********"+log+"***********"
 		for i in range(1,16777215):
 			guest=chercherguest()
-			print "Result logappend"
-			os.system(log+"logappend"+" -T "+ str(i)+" -K "+"secret"+ " -A " + "-G "+guest+" log1")
+			print "logappend"
+			cmd=os.popen(log+"logappend"+" -T "+ str(i)+" -K "+"secret"+ " -A " + "-G "+guest+" log1")
+			cmd
+			result = cmd.read()
+			if "invalid" in result:
+				print "Error with: "+"guest: "+ guest+ "Token: "+ str(i)
+	
 		for i in range(16777215,1073741823):
 			guest=chercherguest()
 			print "Result logappend"
-			os.system(log+"logappend"+" -T "+ str(i)+" -K "+"secret"+ " -A " + "-G "+guest+" log1")
+			cmd=os.popen(log+"logappend"+" -T "+ str(i)+" -K "+"secret"+ " -A " + "-G "+guest+" log1")
+			cmd
+			result=cmd.read()
+			if "invalid" in result:
+				print "Error with: "+"guest: "+ guest+ "Token: "+ str(i)
 
 		print "Result logread"
-		os.system(log+"logread"+" -K "+"secret"+ " -S "+"log1")
+		cmd=os.popen(log+"logread"+" -K "+"secret"+ " -S "+"log1")
+		cmd
+		result=cmd.read()
+		print result
 		os.system("rm -f log1")
 
 def allsecret():
@@ -28,8 +40,16 @@ def allsecret():
 		print "***********"+log+"***********"
 		for s in secret:
 			i+=1
-			os.system(log+"logappend"+" -T "+ str(i)+" -K "+s+ " -A " + "-G "+"guest"+" log"+str(i))
-			os.system(log+"logread"+" -K "+s+ " -S "+"log"+str(i))
+			cmd1=os.popen(log+"logappend"+" -T "+ str(i)+" -K "+s+ " -A " + "-G "+"guest"+" log"+str(i))
+			cmd2=os.popen(log+"logread"+" -K "+s+ " -S "+"log"+str(i))
+			cmd1
+			cmd2
+			result1=cmd1.read()
+			if "invalid" in result1:
+				print "Error with: "+"Key: "+ s+ "in log"+ str(i)
+			result2=cmd2.read()
+			print = result2
+			
 
 
 def createlstsecret(size):
