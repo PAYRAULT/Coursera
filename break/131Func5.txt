@@ -1,0 +1,1 @@
+multiple -A option in the same logappend command.
