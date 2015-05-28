@@ -5,7 +5,7 @@
     {
       "program": "logappend",
 	"args": ["-K", "secret", "-T", "1", "-G", "Fredo", "G", "Fredi", "-A", "log"]
-    },
+    }
   ],
   "output":"invalid"
 }

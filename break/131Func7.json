@@ -9,7 +9,7 @@
     {
       "program": "logappend",
       "args": ["-K", "secret", "-T", "11", "-G", "Fredo", "-A", "-R", "1", "-R", "2", "log"]
-    },
+    }
   ],
   "output":"invalid"  
 }
