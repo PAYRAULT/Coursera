@@ -11,5 +11,5 @@
       "args": ["-K", "secret", "-T", "11", "-G", "Fredo", "-A", "-R", "a", "log"]
     }
   ],
-  "output":"invalid"
+  "output": "invalid"
 }
