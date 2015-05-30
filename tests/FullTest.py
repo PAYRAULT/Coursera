@@ -3,28 +3,31 @@ import random
 import os
 
 ListeOfGuest=[]
-build=["../107/code/build/","../108/code/build/"] # A generer
+build=["../107/code/build/","../111/code/build/"] # A generer
+ListOfToken=range(1,1073741823,1000000)
 
 def allT():
+	os.system("rm -f log1")
 	for log in build:
 		print "***********"+log+"***********"
-		for i in range(1,16777215):
+		for i in ListOfToken:
 			guest=chercherguest()
-			print "logappend"
+			#print "logappend"
 			cmd=os.popen(log+"logappend"+" -T "+ str(i)+" -K "+"secret"+ " -A " + "-G "+guest+" log1")
 			cmd
 			result = cmd.read()
+			print "T = "+str(i)
 			if "invalid" in result:
-				print "Error with: "+"guest: "+ guest+ "Token: "+ str(i)
-	
-		for i in range(16777215,1073741823):
-			guest=chercherguest()
-			print "Result logappend"
-			cmd=os.popen(log+"logappend"+" -T "+ str(i)+" -K "+"secret"+ " -A " + "-G "+guest+" log1")
-			cmd
-			result=cmd.read()
-			if "invalid" in result:
-				print "Error with: "+"guest: "+ guest+ "Token: "+ str(i)
+				print "Error with: "+"guest: "+ guest+ " Token: "+ str(i)
+
+		guest=chercherguest()
+		cmd=os.popen(log+"logappend"+" -T "+ str(1073741823)+" -K "+"secret"+ " -A " + "-G "+guest+" log1")
+		cmd
+		result = cmd.read()
+		print "T = "+str(1073741823)
+		if "invalid" in result:
+			print "Error with: "+"guest: "+ guest+ " Token: "+ str(i)
+
 
 		print "Result logread"
 		cmd=os.popen(log+"logread"+" -K "+"secret"+ " -S "+"log1")
@@ -48,7 +51,7 @@ def allsecret():
 			if "invalid" in result1:
 				print "Error with: "+"Key: "+ s+ "in log"+ str(i)
 			result2=cmd2.read()
-			print = result2
+			print result2
 			
 
 
@@ -66,13 +69,13 @@ def createlstsecret(size):
 
 def chercherguest():
 	chars=string.ascii_uppercase+string.ascii_lowercase
-	g = ''.join(random.choice(chars) for _ in range(65536))
+	g = ''.join(random.choice(chars) for _ in range(100))
 	while(g in ListeOfGuest):
 		chars=string.ascii_uppercase+string.ascii_lowercase
-		g = ''.join(random.choice(chars) for _ in range(65536))
+		g = ''.join(random.choice(chars) for _ in range(100))
 	ListeOfGuest.append(g)
 	return g
 
 
-allT()
+#allT()
 allsecret()
