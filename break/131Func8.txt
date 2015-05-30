@@ -1,0 +1,1 @@
+Application accepts 2 log files
