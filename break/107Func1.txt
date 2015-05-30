@@ -1,0 +1,2 @@
+Range of time stamp is from 1 to 1073741823.
+Token 1004000001 is not accepted.
