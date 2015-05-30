@@ -1,6 +1,6 @@
 {
   "target_team": 131,
-  "type": "confidentiality",
+  "type": "correctness",
   "commands": [
     {
       "program": "logappend",
