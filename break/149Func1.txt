@@ -1,0 +1,1 @@
+wrong argument on logread doesn't return invalid

@@ -1,0 +1,1 @@
+logappend leaved a room which is not in. Invalid expexted.

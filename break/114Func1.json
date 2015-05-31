@@ -1,0 +1,12 @@
+{
+  "target_team": 114,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logread",
+      "args": ["-K", "secret1", "-S", "log1"]
+    }
+  ],
+  "output": "invalid"
+
+}

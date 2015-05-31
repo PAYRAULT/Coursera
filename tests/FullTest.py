@@ -3,11 +3,11 @@ import random
 import os
 
 ListeOfGuest=[]
-build=["../107/code/build/"] # A generer
+build=["../149/code/build/"] # A generer
 ListOfToken=range(1,1073741823,1000000)
 
 def allT():
-	print "All Token"
+	print "####All Token####"
 	os.system("rm -f log1")
 	for log in build:
 		print "***********"+log+"***********"
@@ -18,7 +18,8 @@ def allT():
 			cmd
 			result = cmd.read()
 			if "invalid" in result:
-				print "Error with: "+"guest: "+ guest+ " Token: "+ str(i)
+				print result
+				print "Error logappend with: "+"guest: "+ guest+ " Token: "+ str(i)
 
 		guest=chercherguest()
 		cmd=os.popen(log+"logappend"+" -T "+ str(1073741823)+" -K "+"secret"+ " -A " + "-G "+guest+" log1")
@@ -26,19 +27,20 @@ def allT():
 		result = cmd.read()
 		print "T = "+str(1073741823)
 		if "invalid" in result:
-			print "Error with: "+"guest: "+ guest+ " Token: "+ str(i)
+			print "Error logappend with: "+"guest: "+ guest+ " Token: "+ str(i)
 		
 		cmd=os.popen(log+"logread"+" -K "+"secret"+ " -S "+"log1")
 		cmd
 		result=cmd.read()
 		if "invalid" in result:
 			print "Error logread"
-		#print result
+			print result
+		
 		os.system("rm -f log1")
 
 def allsecret():
 	i=0
-	print "Key Test"
+	print "####Key Test####"
 	secret=createlstsecret(1000)
 	for log in build:
 		print "***********"+log+"***********"
@@ -80,40 +82,47 @@ def chercherguest():
 
 #Fonction pour tester une erreur sur le token
 def WrongToken():
-	print "Wrong Token"
+	print "####Wrong Token####"
 	for log in build:
 		os.system("rm -f log1")
 		print "***********"+log+"***********"
-		result=callLogappend(log,1,"secret"," -A ","-E ","Fred","log1")
+		result=callLogappend(log,0,"secret"," -A ","-E ","Fred","log1")
+		if "invalid" not in result:
+			print "Error logappend 0 is supported"
+
+		result=callLogappend(log,1,"secret"," -A ","-E ","Alfred","log1")
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 1"
+
 		result=callLogappend(log,3,"secret"," -A ","-E ","John","log1")
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 2"
+
 		result=callLogappend(log,2,"secret"," -A ","-E ","Jane","log1")
 		if "invalid" not in result:
 			print "Error logappend Wrong Token"
+		
 
 def SameName():
-	print "Same Name"
+	print "####Same Name####"
 	for log in build:
 		os.system("rm -f log1")
 		print "***********"+log+"***********"
 		result=callLogappend(log,1,"secret"," -A ","-E ","Fred","log1")
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 1"
 		result=callLogappend(log,2,"secret"," -A ","-E ","Fred","log1")
 		if "invalid" not in result:
 			print "Error logappend Same Name"
 		result=callLogappend(log,3,"secret"," -A ","-G ","John","log1")
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 2"
 		result=callLogappend(log,4,"secret"," -A ","-G ","John","log1")
 		if "invalid" not in result:
 			print "Error logappend Same Name"
 
 def SameNameEG():
-	print "Same Name for Employee ang Guest"
+	print "####Same Name for Employee ang Guest####"
 	for log in build:
 		os.system("rm -f log1")
 		print "***********"+log+"***********"
@@ -124,13 +133,101 @@ def SameNameEG():
 		if "invalid" in result:
 			print "Error logappend Same Name EG"
 
-#def StateMachineTest():
-	#for log in build:
-		
+def StateMachineTest():
+	print "####State Machine Test####"
+	for log in build:
+		os.system("rm -f log1")
+		print "***********"+log+"***********"
+		result=callLogappend(log,1,"secret"," -A ","-E ","Fred","log1")
+		if "invalid" in result:
+			print "Error logappend 1"
+		result=callLogappend(log,2,"secret"," -A ","-G ","John","log1")
+		if "invalid" in result:
+			print "Error logappend 2"
+		result=callLogappend(log,3,"secret"," -A ","-G ","John","log1",1)
+		if "invalid" in result:
+			print "Error logappend 3"
+		result=callLogappend(log,4,"secret"," -A ","-G ","John","log1",2)
+		if "invalid" not in result:
+			print "Error logappend arrived in a room without leaving previous room"
+		result=callLogappend(log,5,"secret"," -L ","-G ","John","log1",2)
+		if "invalid" not in result:
+			print "Error logappend leaved a room which is not in"
+		result=callLogappend(log,6,"secret"," -L ","-G ","John","log1")
+		if "invalid" not in result:
+			print "Error logappend leaved gallery without leaving room"
+		result=callLogappend(log,7,"secret"," -L ","-G ","John","log1",1)
+		if "invalid" in result:
+			print "Error logappend 4"
+
+
+def noargument():
+	print "####Same Name####"
+	os.system("rm -f log1")
+	for log in build:
+		os.system("rm -f log1")
+		print "***********"+log+"***********"
+		cmd=os.popen(log+"logappend")
+		cmd
+		result=cmd.read()
+		if "invalid" not in result:
+			print "Error No argurment Logappend"
+
+		cmd=os.popen(log+"logappend -B batchfile")
+		cmd
+		result=cmd.read()
+		if "invalid" not in result:
+			print "Error No argurment Logappend batchfile don't exist"
+		cmd=os.popen(log+"logread")
+		cmd
+		result=cmd.read()
+		if "invalid" not in result:
+			print "Error No argurment LogRead"
+
+		cmd=os.popen(log+"logread"+" -K secret -S log1")
+		cmd
+		result=cmd.read()
+		if "invalid" not in result:
+			print "Error No argurment LogRead log don't exist"
+
+		cmd=os.popen(log+"logread"+" -K secret _S")
+		cmd
+		result=cmd.read()
+		if "invalid" not in result:
+			print "Error No argurment LogRead _S"
+			
+
+def WrongArgument():
+	print "####Wrong Argument"
+	for log in build:
+		print "***********"+log+"***********"
+		os.system("rm -f log1")
+		result=callLogappend(log,1,"secret"," -A ","-G ","John@","log1")
+		if "invalid" not in result:
+			print "Error logappend non alphabetic in name"
+
+		result=callLogappend(log,2,"secret"," -A ","-G ","John01","log1")
+		if "invalid" not in result:
+			print "Error logappend numeric in name"
+
+		result=callLogappend(log,3,"secret"," -A ","-G ","John01","log1")
+		if "invalid" not in result:
+			print "Error logappend numeric in name"
+
+		result=callLogappend(log,4,"secret"," -A ","-G ","Fred","log1")
+		cmd=os.popen(log+"logappend"+" -T "+ str(5)+" -K secret"+ " -A " + "-G "+"Fred"+ " -R A0"+" log1")
+		cmd
+		result = cmd.read()
+		if "invalid" not in result:
+			print "Error logappend alphabetic in room"
+	os.system("rm -f log1")
 
 #Fonction pour appeler logappend avec les arguments
-def callLogappend(path,token, key, AorL,EorG, name,logfile):
-	cmd = os.popen(path+"logappend"+" -T "+ str(token)+" -K "+key+ AorL +EorG+name+" "+logfile)
+def callLogappend(path,token, key, AorL,EorG, name,logfile, room=None):
+	if room == None:
+		cmd = os.popen(path+"logappend"+" -T "+ str(token)+" -K "+key+ AorL +EorG+name+" "+logfile)
+	else:
+		cmd = os.popen(path+"logappend"+" -T "+ str(token)+" -K "+key+ AorL +EorG+name+" -R "+str(room)+" "+logfile)
 	cmd
 	result = cmd.read()
 	return result
@@ -146,6 +243,11 @@ allsecret()
 WrongToken()
 SameName()
 SameNameEG()
+StateMachineTest()
+noargument()
+WrongArgument()
+
+
 
 
 

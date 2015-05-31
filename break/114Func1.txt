@@ -1,0 +1,1 @@
+logread with a log that doesn't exist don't prompt invalid as output
