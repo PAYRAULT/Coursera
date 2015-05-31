@@ -1,0 +1,1 @@
+2 times the same name for guest are not rejected
