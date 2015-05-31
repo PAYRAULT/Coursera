@@ -1,0 +1,12 @@
+{
+  "target_team": 199,
+  "type": "crash",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": []
+    }
+  ],
+  "output": "invalid"
+
+}
