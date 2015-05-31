@@ -3,11 +3,11 @@ import random
 import os
 
 ListeOfGuest=[]
-build=["../107/code/build/"] # A generer
+build=["../120/code/build/"] # A generer
 ListOfToken=range(1,1073741823,1000000)
 
 def allT():
-	print "All Token"
+	print "####All Token####"
 	os.system("rm -f log1")
 	for log in build:
 		print "***********"+log+"***********"
@@ -38,7 +38,7 @@ def allT():
 
 def allsecret():
 	i=0
-	print "Key Test"
+	print "####Key Test####"
 	secret=createlstsecret(1000)
 	for log in build:
 		print "***********"+log+"***********"
@@ -80,7 +80,7 @@ def chercherguest():
 
 #Fonction pour tester une erreur sur le token
 def WrongToken():
-	print "Wrong Token"
+	print "####Wrong Token####"
 	for log in build:
 		os.system("rm -f log1")
 		print "***********"+log+"***********"
@@ -95,7 +95,7 @@ def WrongToken():
 			print "Error logappend Wrong Token"
 
 def SameName():
-	print "Same Name"
+	print "####Same Name####"
 	for log in build:
 		os.system("rm -f log1")
 		print "***********"+log+"***********"
@@ -113,7 +113,7 @@ def SameName():
 			print "Error logappend Same Name"
 
 def SameNameEG():
-	print "Same Name for Employee ang Guest"
+	print "####Same Name for Employee ang Guest####"
 	for log in build:
 		os.system("rm -f log1")
 		print "***********"+log+"***********"
@@ -125,7 +125,7 @@ def SameNameEG():
 			print "Error logappend Same Name EG"
 
 def StateMachineTest():
-	print "State Machine Test"
+	print "####State Machine Test####"
 	for log in build:
 		os.system("rm -f log1")
 		print "***********"+log+"***********"
@@ -158,7 +158,6 @@ def callLogappend(path,token, key, AorL,EorG, name,logfile, room=None):
 	if room == None:
 		cmd = os.popen(path+"logappend"+" -T "+ str(token)+" -K "+key+ AorL +EorG+name+" "+logfile)
 	else:
-		print "room "+str(room)
 		cmd = os.popen(path+"logappend"+" -T "+ str(token)+" -K "+key+ AorL +EorG+name+" -R "+str(room)+" "+logfile)
 	cmd
 	result = cmd.read()
