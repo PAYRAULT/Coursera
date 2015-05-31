@@ -3,7 +3,7 @@ import random
 import os
 
 ListeOfGuest=[]
-build=["../134/code/build/"] # A generer
+build=["../136/code/build/"] # A generer
 ListOfToken=range(1,1073741823,1000000)
 
 def allT():
@@ -84,15 +84,22 @@ def WrongToken():
 	for log in build:
 		os.system("rm -f log1")
 		print "***********"+log+"***********"
-		result=callLogappend(log,1,"secret"," -A ","-E ","Fred","log1")
+		result=callLogappend(log,0,"secret"," -A ","-E ","Fred","log1")
+		if "invalid" not in result:
+			print "Error logappend 0 is supported"
+
+		result=callLogappend(log,1,"secret"," -A ","-E ","Alfred","log1")
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 1"
+
 		result=callLogappend(log,3,"secret"," -A ","-E ","John","log1")
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 2"
+
 		result=callLogappend(log,2,"secret"," -A ","-E ","Jane","log1")
 		if "invalid" not in result:
 			print "Error logappend Wrong Token"
+		
 
 def SameName():
 	print "####Same Name####"
@@ -101,13 +108,13 @@ def SameName():
 		print "***********"+log+"***********"
 		result=callLogappend(log,1,"secret"," -A ","-E ","Fred","log1")
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 1"
 		result=callLogappend(log,2,"secret"," -A ","-E ","Fred","log1")
 		if "invalid" not in result:
 			print "Error logappend Same Name"
 		result=callLogappend(log,3,"secret"," -A ","-G ","John","log1")
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 2"
 		result=callLogappend(log,4,"secret"," -A ","-G ","John","log1")
 		if "invalid" not in result:
 			print "Error logappend Same Name"
@@ -131,13 +138,13 @@ def StateMachineTest():
 		print "***********"+log+"***********"
 		result=callLogappend(log,1,"secret"," -A ","-E ","Fred","log1")
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 1"
 		result=callLogappend(log,2,"secret"," -A ","-G ","John","log1")
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 2"
 		result=callLogappend(log,3,"secret"," -A ","-G ","John","log1",1)
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 3"
 		result=callLogappend(log,4,"secret"," -A ","-G ","John","log1",2)
 		if "invalid" not in result:
 			print "Error logappend arrived in a room without leaving previous room"
@@ -149,7 +156,7 @@ def StateMachineTest():
 			print "Error logappend leaved gallery without leaving room"
 		result=callLogappend(log,7,"secret"," -L ","-G ","John","log1",1)
 		if "invalid" in result:
-			print "Error logappend"
+			print "Error logappend 4"
 
 
 def noargument():

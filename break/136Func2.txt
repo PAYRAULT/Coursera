@@ -1,0 +1,1 @@
+Wrong state machine after guest arrived in roorm leave wrong room, leave gallery without leaving room.
