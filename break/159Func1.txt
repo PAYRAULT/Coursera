@@ -1,0 +1,1 @@
+logread without argument didn't return invalid
