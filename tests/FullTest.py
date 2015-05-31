@@ -154,7 +154,9 @@ def StateMachineTest():
 
 def noargument():
 	print "####Same Name####"
+	os.system("rm -f log1")
 	for log in build:
+		os.system("rm -f log1")
 		print "***********"+log+"***********"
 		cmd=os.popen(log+"logappend")
 		cmd
@@ -179,7 +181,22 @@ def noargument():
 		if "invalid" not in result:
 			print "Error No argurment LogRead log don't exist"
 
+def WrongArgument():
+	print "####Wrong Argument"
+	for log in build:
+		print "***********"+log+"***********"
+		os.system("rm -f log1")
+		result=callLogappend(log,1,"secret"," -A ","-G ","John@","log1")
+		if invalide not in result:
+			print "Error logappend non alphabetic in name"
 
+		result=callLogappend(log,2,"secret"," -A ","-G ","John01","log1")
+		if invalide not in result:
+			print "Error logappend numeric in name"
+
+		result=callLogappend(log,3,"secret"," -A ","-G ","John01","log1")
+		if invalide not in result:
+			print "Error logappend numeric in name"
 
 #Fonction pour appeler logappend avec les arguments
 def callLogappend(path,token, key, AorL,EorG, name,logfile, room=None):
@@ -204,6 +221,7 @@ SameName()
 SameNameEG()
 StateMachineTest()
 noargument()
+WrongArgument()
 
 
 
