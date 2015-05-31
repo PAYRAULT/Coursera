@@ -3,7 +3,7 @@ import random
 import os
 
 ListeOfGuest=[]
-build=["../107/code/build/","../111/code/build/","../114/code/build/"] # A generer
+build=["../115/code/build/"] # A generer
 ListOfToken=range(1,1073741823,1000000)
 
 def allT():
@@ -39,7 +39,7 @@ def allT():
 
 def allsecret():
 	i=0
-	secret=createlstsecret(65535)
+	secret=createlstsecret(1000)
 	for log in build:
 		print "***********"+log+"***********"
 		for s in secret:
