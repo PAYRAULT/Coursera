@@ -190,6 +190,13 @@ def noargument():
 		if "invalid" not in result:
 			print "Error No argurment LogRead log don't exist"
 
+		cmd=os.popen(log+"logread"+" -K secret _S")
+		cmd
+		result=cmd.read()
+		if "invalid" not in result:
+			print "Error No argurment LogRead _S"
+			
+
 def WrongArgument():
 	print "####Wrong Argument"
 	for log in build:
