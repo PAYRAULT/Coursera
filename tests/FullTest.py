@@ -124,13 +124,42 @@ def SameNameEG():
 		if "invalid" in result:
 			print "Error logappend Same Name EG"
 
-#def StateMachineTest():
-	#for log in build:
+def StateMachineTest():
+	print "State Machine Test"
+	for log in build:
+		os.system("rm -f log1")
+		print "***********"+log+"***********"
+		result=callLogappend(log,1,"secret"," -A ","-E ","Fred","log1")
+		if "invalid" in result:
+			print "Error logappend"
+		result=callLogappend(log,2,"secret"," -A ","-G ","John","log1")
+		if "invalid" in result:
+			print "Error logappend"
+		result=callLogappend(log,3,"secret"," -A ","-G ","John","log1",1)
+		if "invalid" in result:
+			print "Error logappend"
+		result=callLogappend(log,4,"secret"," -A ","-G ","John","log1",2)
+		if "invalid" not in result:
+			print "Error logappend arrived in a room without leaving previous room"
+		result=callLogappend(log,5,"secret"," -L ","-G ","John","log1",2)
+		if "invalid" not in result:
+			print "Error logappend leaved a room which is not in"
+		result=callLogappend(log,6,"secret"," -L ","-G ","John","log1")
+		if "invalid" not in result:
+			print "Error logappend leaved gallery without leaving room"
+		result=callLogappend(log,7,"secret"," -L ","-G ","John","log1",1)
+		if "invalid" in result:
+			print "Error logappend"
+
 		
 
 #Fonction pour appeler logappend avec les arguments
-def callLogappend(path,token, key, AorL,EorG, name,logfile):
-	cmd = os.popen(path+"logappend"+" -T "+ str(token)+" -K "+key+ AorL +EorG+name+" "+logfile)
+def callLogappend(path,token, key, AorL,EorG, name,logfile, room=None):
+	if room == None:
+		cmd = os.popen(path+"logappend"+" -T "+ str(token)+" -K "+key+ AorL +EorG+name+" "+logfile)
+	else:
+		print "room "+str(room)
+		cmd = os.popen(path+"logappend"+" -T "+ str(token)+" -K "+key+ AorL +EorG+name+" -R "+str(room)+" "+logfile)
 	cmd
 	result = cmd.read()
 	return result
@@ -146,6 +175,7 @@ allsecret()
 WrongToken()
 SameName()
 SameNameEG()
+StateMachineTest()
 
 
 
