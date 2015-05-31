@@ -1,0 +1,1 @@
+When a employee arrive with an incorrect time stamp (inferior to the last one), logappend add the employee.
