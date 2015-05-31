@@ -3,7 +3,7 @@ import random
 import os
 
 ListeOfGuest=[]
-build=["../114/code/build/"] # A generer
+build=["../134/code/build/"] # A generer
 ListOfToken=range(1,1073741823,1000000)
 
 def allT():
@@ -187,16 +187,24 @@ def WrongArgument():
 		print "***********"+log+"***********"
 		os.system("rm -f log1")
 		result=callLogappend(log,1,"secret"," -A ","-G ","John@","log1")
-		if invalide not in result:
+		if "invalid" not in result:
 			print "Error logappend non alphabetic in name"
 
 		result=callLogappend(log,2,"secret"," -A ","-G ","John01","log1")
-		if invalide not in result:
+		if "invalid" not in result:
 			print "Error logappend numeric in name"
 
 		result=callLogappend(log,3,"secret"," -A ","-G ","John01","log1")
-		if invalide not in result:
+		if "invalid" not in result:
 			print "Error logappend numeric in name"
+
+		result=callLogappend(log,4,"secret"," -A ","-G ","Fred","log1")
+		cmd=os.popen(log+"logappend"+" -T "+ str(5)+" -K secret"+ " -A " + "-G "+"Fred"+ " -R A0"+" log1")
+		cmd
+		result = cmd.read()
+		if "invalid" not in result:
+			print "Error logappend alphabetic in room"
+	os.system("rm -f log1")
 
 #Fonction pour appeler logappend avec les arguments
 def callLogappend(path,token, key, AorL,EorG, name,logfile, room=None):
