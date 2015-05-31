@@ -3,7 +3,7 @@ import random
 import os
 
 ListeOfGuest=[]
-build=["../120/code/build/"] # A generer
+build=["../114/code/build/"] # A generer
 ListOfToken=range(1,1073741823,1000000)
 
 def allT():
@@ -151,7 +151,35 @@ def StateMachineTest():
 		if "invalid" in result:
 			print "Error logappend"
 
-		
+
+def noargument():
+	print "####Same Name####"
+	for log in build:
+		print "***********"+log+"***********"
+		cmd=os.popen(log+"logappend")
+		cmd
+		result=cmd.read()
+		if "invalid" not in result:
+			print "Error No argurment Logappend"
+
+		cmd=os.popen(log+"logappend -B batchfile")
+		cmd
+		result=cmd.read()
+		if "invalid" not in result:
+			print "Error No argurment Logappend batchfile don't exist"
+		cmd=os.popen(log+"logread")
+		cmd
+		result=cmd.read()
+		if "invalid" not in result:
+			print "Error No argurment LogRead"
+
+		cmd=os.popen(log+"logread"+" -K secret -S log1")
+		cmd
+		result=cmd.read()
+		if "invalid" not in result:
+			print "Error No argurment LogRead log don't exist"
+
+
 
 #Fonction pour appeler logappend avec les arguments
 def callLogappend(path,token, key, AorL,EorG, name,logfile, room=None):
@@ -175,6 +203,9 @@ WrongToken()
 SameName()
 SameNameEG()
 StateMachineTest()
+noargument()
+
+
 
 
 
