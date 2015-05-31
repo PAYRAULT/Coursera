@@ -1,0 +1,1 @@
+application didn't return invalid if batchfile didn't exist.
