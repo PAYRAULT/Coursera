@@ -3,7 +3,7 @@ import random
 import os
 
 ListeOfGuest=[]
-build=["../136/code/build/"] # A generer
+build=["../149/code/build/"] # A generer
 ListOfToken=range(1,1073741823,1000000)
 
 def allT():
@@ -18,7 +18,8 @@ def allT():
 			cmd
 			result = cmd.read()
 			if "invalid" in result:
-				print "Error with: "+"guest: "+ guest+ " Token: "+ str(i)
+				print result
+				print "Error logappend with: "+"guest: "+ guest+ " Token: "+ str(i)
 
 		guest=chercherguest()
 		cmd=os.popen(log+"logappend"+" -T "+ str(1073741823)+" -K "+"secret"+ " -A " + "-G "+guest+" log1")
@@ -26,14 +27,15 @@ def allT():
 		result = cmd.read()
 		print "T = "+str(1073741823)
 		if "invalid" in result:
-			print "Error with: "+"guest: "+ guest+ " Token: "+ str(i)
+			print "Error logappend with: "+"guest: "+ guest+ " Token: "+ str(i)
 		
 		cmd=os.popen(log+"logread"+" -K "+"secret"+ " -S "+"log1")
 		cmd
 		result=cmd.read()
 		if "invalid" in result:
 			print "Error logread"
-		#print result
+			print result
+		
 		os.system("rm -f log1")
 
 def allsecret():
