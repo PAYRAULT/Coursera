@@ -1,0 +1,9 @@
+10285_204-22.json
+Hereafter the trace of the command:
+$ ../fix/code/logappend -T 1 -K secret -A -E PIPPO ../TESTLOG
+$ echo $?
+0
+$ ../fix/code/logread -K secret -S ../TESTLOG
+PIPPO
+My program works with file with dots.
+
