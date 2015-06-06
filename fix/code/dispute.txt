@@ -1,9 +1,18 @@
-10285_204-22.json
+file : 10285_204-22.json
 Hereafter the trace of the command:
 $ ../fix/code/logappend -T 1 -K secret -A -E PIPPO ../TESTLOG
 $ echo $?
 0
 $ ../fix/code/logread -K secret -S ../TESTLOG
 PIPPO
-My program works with file with dots.
+Our program works with file with dots.
+
+file : 21540_204_10.json
+Hereafter the trace of the command:
+$ logappend -T 1 -K test -A -E Martha log7123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+$ echo $?
+0
+$ ../origin/logread -K test -S log7123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+Martha
+Our program works with long file name.
 
