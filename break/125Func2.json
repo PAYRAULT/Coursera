@@ -1,0 +1,23 @@
+{
+  "target_team": 125,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-K", "secret1", "-T", "1", "-E", "Jane", "-A", "log1"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret1", "-T", "3", "-E", "Fred", "-A", "log1"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret1", "-T", "2", "-E", "Alex", "-A", "log1"]
+    },
+    {
+      "program": "logread",
+      "args": [ "-K", "secret1", "-S", "log1"]
+    }
+  ],
+  "output": "Jane, Fred"
+}

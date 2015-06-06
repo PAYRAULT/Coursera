@@ -1,0 +1,24 @@
+{
+  "target_team": 129,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "1", "-E", "Fred", "-A", "log1"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "2", "-E", "Fred", "-A", "-R", "1", "log1"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "3", "-E", "Fred", "-L", "-R", "2", "log1"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "4", "-E", "Fred", "-L", "log1"]
+    }
+
+  ],
+  "output": "invalid"
+}

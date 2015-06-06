@@ -1,0 +1,1 @@
+two times the same name for a guest shoud be rejected

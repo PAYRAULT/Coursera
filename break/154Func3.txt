@@ -1,0 +1,1 @@
+Non alphabetical charactere in name are accepted.

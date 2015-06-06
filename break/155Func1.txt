@@ -1,0 +1,1 @@
+logread with not existing logfile doesn't return invalid

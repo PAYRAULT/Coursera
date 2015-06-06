@@ -1,0 +1,1 @@
+logappend arrived in a room without leaving previous room

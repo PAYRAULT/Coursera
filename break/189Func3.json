@@ -1,0 +1,11 @@
+{
+  "target_team": 189,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-B", "BatchFile"]
+    }
+  ],
+  "output": "invalid"
+}

@@ -1,0 +1,1 @@
+logappend didn't return invalid in case of not existing batch file
