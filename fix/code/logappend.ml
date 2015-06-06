@@ -55,15 +55,8 @@ let set_room r =
     
 (* Set the token number *)
 let set_token tk =
-  if(!token = "") then
-    begin
       check_token tk;
       token := tk;
-    end
-  else
-    begin
-      raise (Arg.Bad "Option -K called twice.")
-    end
 ;;
 
 (* Set name of the log file *)
