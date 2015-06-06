@@ -280,7 +280,7 @@ let main =
       print_string ("invalid\n");
       exit 255
     | Integrity_error ->
-      print_string ("invalid\n");
+      print_string ("integrity violation\n");
       exit 255
     | Lexer.LexError(s) ->
     (*print_string ("Batch lexing error : "^s^"....\n");*)

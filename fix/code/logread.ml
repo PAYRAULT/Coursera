@@ -238,7 +238,7 @@ let main =
     (*print_string (s^"\n");*)
     exit 0
   | Integrity_error ->
-    print_string ("invalid\n");
+    print_string ("integrity violation\n");
     exit 255
   | Arg.Bad(_) ->
     print_string ("invalid\n");
