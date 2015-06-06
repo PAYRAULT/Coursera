@@ -1,0 +1,2 @@
+Wrong output message when there is an integrity violation.
+Correction of the output message (change "invalid" by "integrity violation").
