@@ -295,6 +295,9 @@ let main =
 	end
       else
 	exit 0
+    | Sys_error(_) ->
+      print_string ("invalid\n");
+      exit 255      
     | e ->
       (* print_string ("Exc : "^(Printexc.to_string e)^"\n"); *)
       exit 0

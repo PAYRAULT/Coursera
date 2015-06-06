@@ -243,6 +243,9 @@ let main =
   | Arg.Bad(_) ->
     print_string ("invalid\n");
     exit 255
+  | Sys_error(_) ->
+    print_string ("invalid\n");
+    exit 255      
   | e ->
     (*print_string ("Exc : "^(Printexc.to_string e)^"\n");*)
     exit 255
