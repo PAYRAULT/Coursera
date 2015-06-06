@@ -1,0 +1,3 @@
+We were not aware that if a parameter (in this case the key) is
+provided multiple times, the last value should be used. We put a
+protection against multiple parameter value.
