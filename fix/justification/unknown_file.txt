@@ -1,0 +1,4 @@
+Wrong output message when the log or batch file is not existing or too
+long or ...
+Correction of the output message (change "" by "invalid") on exception
+sys.errors.
